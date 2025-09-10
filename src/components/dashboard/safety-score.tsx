@@ -18,6 +18,7 @@ export function SafetyScore({ value }: SafetyScoreProps) {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
+    // Animate the progress bar on value change
     const timer = setTimeout(() => setProgress(value), 300);
     return () => clearTimeout(timer);
   }, [value]);
@@ -27,7 +28,6 @@ export function SafetyScore({ value }: SafetyScoreProps) {
       return {
         label: 'Safe 🔒',
         badgeVariant: 'default',
-        progressColor: 'text-green-500',
         textColor: 'text-green-500',
       };
     }
@@ -35,14 +35,12 @@ export function SafetyScore({ value }: SafetyScoreProps) {
       return {
         label: 'Risky ⚠️',
         badgeVariant: 'secondary',
-        progressColor: 'text-amber-500',
         textColor: 'text-amber-500',
       };
     }
     return {
       label: 'Critical 🚨',
       badgeVariant: 'destructive',
-      progressColor: 'text-red-500',
       textColor: 'text-red-500',
     };
   };

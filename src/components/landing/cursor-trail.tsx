@@ -54,7 +54,9 @@ export function CursorTrail() {
 
     const handleMouseMove = (e: MouseEvent) => {
       const { clientX, clientY } = e;
-      trail.style.transform = `translate(${clientX}px, ${clientY}px)`;
+      if (trail.style) {
+         trail.style.transform = `translate(${clientX}px, ${clientY}px)`;
+      }
 
       const dx = clientX - lastPos.current.x;
       const dy = clientY - lastPos.current.y;

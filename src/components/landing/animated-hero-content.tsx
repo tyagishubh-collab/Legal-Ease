@@ -18,14 +18,23 @@ export function AnimatedHeroContent() {
     circle.style.width = circle.style.height = `${diameter}px`;
     circle.style.left = `${e.clientX - button.offsetLeft - radius}px`;
     circle.style.top = `${e.clientY - button.offsetTop - radius}px`;
-    circle.classList.add('absolute', 'rounded-full', 'bg-white/30', 'pointer-events-none', 'transform', 'scale-0', 'animate-ripple');
     
-    // Using a key makes React treat it as a new element, restarting animation
-    circle.setAttribute('key', Date.now().toString());
-
-    const ripple = button.getElementsByClassName('ripple-container')[0];
-    if (ripple) {
-      ripple.appendChild(circle);
+    // The following classes are defined in globals.css for the ripple effect
+    circle.classList.add(
+      'absolute',
+      'rounded-full',
+      'bg-white/30',
+      'pointer-events-none',
+      'transform',
+      'scale-0'
+    );
+    
+    // Custom animation class from globals.css
+    circle.style.animation = 'ripple 600ms linear';
+    
+    const rippleContainer = button.querySelector('.ripple-container');
+    if (rippleContainer) {
+      rippleContainer.appendChild(circle);
       setTimeout(() => circle.remove(), 600);
     }
   };
@@ -51,8 +60,8 @@ export function AnimatedHeroContent() {
           onClick={onButtonClick}
         >
           <Link href="/dashboard">
-            <span className="ripple-container absolute inset-0"/>
-            Get Started
+            <span className="ripple-container absolute inset-0 z-0"/>
+            <span className="relative z-10">Get Started</span>
           </Link>
         </Button>
       </div>

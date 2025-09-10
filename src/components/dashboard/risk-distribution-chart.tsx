@@ -62,7 +62,7 @@ export function RiskDistributionChart({ data }: RiskDistributionChartProps) {
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
             />
-            <Pie data={data} dataKey="value" nameKey="name" innerRadius="60%">
+            <Pie data={data} dataKey="value" nameKey="name" innerRadius="60%" animationBegin={0} animationDuration={800}>
               {data.map((entry) => (
                 <Cell key={`cell-${entry.name}`} fill={entry.fill} />
               ))}

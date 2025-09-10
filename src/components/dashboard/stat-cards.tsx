@@ -47,7 +47,7 @@ export function StatCards({
       {stats.map((stat) => (
         <Card
           key={stat.title}
-          className="cursor-pointer hover:bg-muted/50 transition-colors"
+          className="cursor-pointer hover:bg-muted/50 transition-colors duration-300 hover:-translate-y-1 hover:shadow-lg"
           onClick={() => onCardClick(stat.level)}
         >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
