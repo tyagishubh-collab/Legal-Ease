@@ -26,9 +26,9 @@
     --radius: 0.5rem;
     --chart-1: 180 100% 25.1%; /* Teal */
     --chart-2: 275 100% 25.5%; /* Indigo */
-    --chart-3: 0 84.2% 60.2%; /* Red for High Risk */
-    --chart-4: 45 93% 47%; /* Yellow for Medium Risk */
-    --chart-5: 221 83% 53%; /* Blue for Low Risk */
+    --chart-3: 0 72% 51%; /* Red for High Risk */
+    --chart-4: 45 93% 55%; /* Yellow for Medium Risk */
+    --chart-5: 221 83% 63%; /* Blue for Low Risk */
   }
   .dark {
     --background: 224 71.4% 4.1%;
@@ -64,10 +64,86 @@
   }
   body {
     @apply bg-background text-foreground;
+    overflow-x: hidden;
   }
-  .dark {
-    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'  width='22' height='22' viewport='0 0 100 100' style='fill:black;font-size:12px;'><circle cx='11' cy='11' r='10' fill='white' stroke='white' stroke-width='2' style='filter: drop-shadow(0 0 2px white) drop-shadow(0 0 4px white);'/></svg>")
-        11 11,
-      auto;
+}
+
+/* Particle and cursor effects */
+.particle {
+  position: fixed;
+  left: 0;
+  top: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 9999;
+}
+
+.cursor-trail {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, hsl(var(--primary)), hsl(var(--chart-1)));
+  box-shadow: 0 0 10px hsl(var(--primary)), 0 0 20px hsl(var(--primary)), 0 0 30px hsl(var(--chart-1));
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s ease-out, opacity 0.3s ease-out;
+  z-index: 9999;
+  opacity: 0;
+}
+body:hover .cursor-trail {
+  opacity: 1;
+}
+
+/* Logo animation */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px 5px hsl(var(--primary) / 0.4), 0 0 40px 10px hsl(var(--primary) / 0.2);
+  }
+  50% {
+    box-shadow: 0 0 30px 10px hsl(var(--primary) / 0.6), 0 0 60px 20px hsl(var(--primary) / 0.3);
+  }
+}
+
+.logo-glow {
+  animation: pulse-glow 4s infinite ease-in-out;
+}
+
+/* Heading animation */
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+@keyframes blink-caret {
+  from, to { border-color: transparent }
+  50% { border-color: hsl(var(--primary)); }
+}
+
+.typing-effect {
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: .15em solid hsl(var(--primary));
+  animation: typing 3.5s steps(40, end), blink-caret .75s step-end infinite;
+  animation-fill-mode: forwards;
+  width: 0;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in-text {
+  animation: fade-in 1.5s 3.5s ease-out forwards;
+  opacity: 0;
+}
+
+
+/* Glassmorphism button */
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
   }
 }
