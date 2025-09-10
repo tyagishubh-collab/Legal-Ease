@@ -29,3 +29,7 @@ export type Summary = {
 export type Explanation = {
   explanation: string;
 };
+
+export type SuggestedRewrite = {
+  suggestedRewrite: string;
+};

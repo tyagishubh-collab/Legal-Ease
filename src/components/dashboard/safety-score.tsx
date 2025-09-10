@@ -6,9 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useEffect, useState } from 'react';
 
@@ -25,30 +23,27 @@ export function SafetyScore({ value }: SafetyScoreProps) {
   }, [value]);
 
   const getStatus = (score: number) => {
-    if (score >= 75) {
+    if (score >= 80) {
       return {
-        label: 'Safe to Sign',
+        label: 'Safe 🔒',
         badgeVariant: 'default',
-        progressColor: 'bg-green-500',
+        progressColor: 'text-green-500',
         textColor: 'text-green-500',
-        icon: <CheckCircle className="mr-2 h-5 w-5" />,
       };
     }
-    if (score >= 40) {
+    if (score >= 60) {
       return {
-        label: 'Review Carefully',
+        label: 'Risky ⚠️',
         badgeVariant: 'secondary',
-        progressColor: 'bg-amber-500',
+        progressColor: 'text-amber-500',
         textColor: 'text-amber-500',
-        icon: <AlertTriangle className="mr-2 h-5 w-5" />,
       };
     }
     return {
-      label: 'High Risk Contract',
+      label: 'Critical 🚨',
       badgeVariant: 'destructive',
-      progressColor: 'bg-red-500',
+      progressColor: 'text-red-500',
       textColor: 'text-red-500',
-      icon: <XCircle className="mr-2 h-5 w-5" />,
     };
   };
 
@@ -90,7 +85,6 @@ export function SafetyScore({ value }: SafetyScoreProps) {
         </div>
 
         <Badge variant={status.badgeVariant} className="text-sm">
-          {status.icon}
           {status.label}
         </Badge>
       </CardContent>

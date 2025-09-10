@@ -17,7 +17,7 @@ import { Avatar, AvatarFallback } from '../ui/avatar';
 export default function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
-      <div className="md:flex">
+      <div className="flex min-h-screen">
         <Sidebar>
           <SidebarHeader className="border-b">
             <Logo />
@@ -51,7 +51,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               </Avatar>
             </div>
           </header>
-          <main className="flex-1 overflow-auto">{children}</main>
+          <main className="flex-1">{children}</main>
         </SidebarInset>
       </div>
     </SidebarProvider>

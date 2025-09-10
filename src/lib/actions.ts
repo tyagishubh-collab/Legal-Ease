@@ -1,14 +1,19 @@
 'use server';
 
+import { z } from 'zod';
+import type { Summary, Explanation, RiskAnalysis } from './types';
 import {
   SummarizeClauseInput,
 } from '@/ai/flows/summarize-clauses';
 import {
   ExplainClauseForRoleInput,
 } from '@/ai/flows/explain-clauses-for-roles';
-import { contract } from './data';
-import { z } from 'zod';
-import type { Summary, Explanation } from './types';
+import {
+  SuggestClauseRewriteInput
+} from '@/ai/flows/suggest-clause-rewrite';
+import {
+  AnalyzeClauseRiskInput
+} from '@/ai/flows/analyze-clause-risk';
 
 const summarizeSchema = z.object({
   clauseText: z.string(),
@@ -109,7 +114,61 @@ export async function answerQuestionAction(
      }
   }
 
+  if (question.includes('risky') && question.includes('clause 6')) {
+    return {
+      answer: "Clause 6, the Indemnification clause, is considered high-risk because it's **uncapped**. This means if you (the Receiving Party) breach the agreement, you could be liable for an unlimited amount of money, including consequential and punitive damages. It's much safer to have a limit, or 'cap,' on the liability."
+    }
+  }
+
   return {
-    answer: "This is a mock answer. I can answer questions about the contract. For example, you could ask 'What are my obligations?' or 'How long does this agreement last?'"
+    answer: "This is a mock answer. I can answer questions about the contract. For example, you could ask 'What are my obligations?' or 'Why is clause 6 risky?'"
   };
+}
+
+
+const rewriteSchema = z.object({
+  clauseText: z.string(),
+});
+
+export async function suggestClauseRewriteAction(
+  input: SuggestClauseRewriteInput
+) {
+  const validatedInput = rewriteSchema.safeParse(input);
+  if (!validatedInput.success) {
+    throw new Error('Invalid input for suggestClauseRewriteAction');
+  }
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  return {
+    suggestedRewrite: 'This is a mock suggested rewrite. The Receiving Party\'s liability for any breach of this Agreement shall be limited to direct damages and shall not exceed the total value of the fees paid by the Disclosing Party in the preceding 12 months. Consequential, indirect, and punitive damages are expressly excluded.'
+  }
+}
+
+const analyzeRiskSchema = z.object({
+  clause: z.string(),
+});
+
+export async function analyzeClauseRiskAction(input: AnalyzeClauseRiskInput): Promise<RiskAnalysis> {
+  const validatedInput = analyzeRiskSchema.safeParse(input);
+  if (!validatedInput.success) {
+    throw new Error('Invalid input for analyzeClauseRiskAction');
+  }
+
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  const text = validatedInput.data.clause.toLowerCase();
+
+  if (text.includes('uncapped') || text.includes('unlimited liability')) {
+    return { riskScore: 95, riskLevel: 'high', colorCode: 'red' };
+  }
+  if (text.includes('indemnify') || text.includes('hold harmless')) {
+    return { riskScore: 75, riskLevel: 'high', colorCode: 'red' };
+  }
+  if (text.includes('in perpetuity') || text.includes('forever')) {
+    return { riskScore: 65, riskLevel: 'medium', colorCode: 'amber' };
+  }
+   if (text.includes('reasonable efforts')) {
+    return { riskScore: 30, riskLevel: 'low', colorCode: 'green' };
+  }
+
+  // default fallback
+  return { riskScore: 45, riskLevel: 'medium', colorCode: 'amber' };
 }
