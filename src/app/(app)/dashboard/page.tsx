@@ -31,13 +31,13 @@ async function DashboardData() {
   );
 
   const riskData = [
-    { name: 'Low Risk', value: riskCounts.low, fill: 'var(--color-chart-5)' },
+    { name: 'Low Risk', value: riskCounts.low, fill: 'hsl(var(--chart-5))' },
     {
       name: 'Medium Risk',
       value: riskCounts.medium,
-      fill: 'var(--color-chart-4)',
+      fill: 'hsl(var(--chart-4))',
     },
-    { name: 'High Risk', value: riskCounts.high, fill: 'var(--color-chart-3)' },
+    { name: 'High Risk', value: riskCounts.high, fill: 'hsl(var(--chart-3))' },
   ];
 
   const clausesWithRisk = contract.clauses.map((clause) => {

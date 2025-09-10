@@ -15,6 +15,7 @@ import {
   ChartLegendContent,
 } from '@/components/ui/chart';
 import { Pie, PieChart, Cell } from 'recharts';
+import type { ChartConfig } from '@/components/ui/chart';
 
 type RiskDistributionChartProps = {
   data: {
@@ -40,11 +41,9 @@ const chartConfig = {
     label: 'High Risk',
     color: 'hsl(var(--chart-3))',
   },
-};
+} satisfies ChartConfig;
 
 export function RiskDistributionChart({ data }: RiskDistributionChartProps) {
-  const totalValue = data.reduce((acc, curr) => acc + curr.value, 0);
-
   return (
     <Card className="h-full">
       <CardHeader>
