@@ -1,6 +1,6 @@
-import type { Contract } from './types';
+import type { Contract, RiskAnalysis } from './types';
 
-export const contract: Contract = {
+export const contract: Contract & { riskAnalyses: (RiskAnalysis & { clauseId: string })[] } = {
   title: 'Mutual Non-Disclosure Agreement',
   clauses: [
     {
@@ -59,6 +59,44 @@ export const contract: Contract = {
         { name: 'indemnify, defend, and hold harmless', type: 'Obligation' },
         { name: 'uncapped', type: 'Amount' },
       ],
+    },
+  ],
+  riskAnalyses: [
+    {
+      clauseId: 'clause-1',
+      riskScore: 20,
+      riskLevel: 'low',
+      colorCode: 'green',
+    },
+    {
+      clauseId: 'clause-2',
+      riskScore: 10,
+      riskLevel: 'low',
+      colorCode: 'green',
+    },
+    {
+      clauseId: 'clause-3',
+      riskScore: 45,
+      riskLevel: 'medium',
+      colorCode: 'amber',
+    },
+    {
+      clauseId: 'clause-4',
+      riskScore: 60,
+      riskLevel: 'medium',
+      colorCode: 'amber',
+    },
+    {
+      clauseId: 'clause-5',
+      riskScore: 30,
+      riskLevel: 'low',
+      colorCode: 'green',
+    },
+    {
+      clauseId: 'clause-6',
+      riskScore: 90,
+      riskLevel: 'high',
+      colorCode: 'red',
     },
   ],
 };

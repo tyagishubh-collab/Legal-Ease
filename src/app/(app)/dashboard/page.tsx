@@ -1,5 +1,4 @@
 import { contract } from '@/lib/data';
-import { analyzeClauseRisk } from '@/ai/flows/analyze-clause-risk';
 import { SafetyScore } from '@/components/dashboard/safety-score';
 import { RiskDistributionChart } from '@/components/dashboard/risk-distribution-chart';
 import { StatCards } from '@/components/dashboard/stat-cards';
@@ -9,14 +8,7 @@ import { ClauseCard } from '@/components/contract/clause-card';
 import type { RiskAnalysis } from '@/lib/types';
 
 async function DashboardData() {
-  const riskAnalyses: (RiskAnalysis & { clauseId: string })[] = [];
-  for (const clause of contract.clauses) {
-    const analysis = await analyzeClauseRisk({ clause: clause.text });
-    riskAnalyses.push({ ...analysis, clauseId: clause.id });
-    // Add a small delay to be respectful of API rate limits
-    await new Promise(resolve => setTimeout(resolve, 200));
-  }
-
+  const riskAnalyses: (RiskAnalysis & { clauseId: string })[] = contract.riskAnalyses;
 
   const totalClauses = contract.clauses.length;
   const totalRiskScore = riskAnalyses.reduce(
