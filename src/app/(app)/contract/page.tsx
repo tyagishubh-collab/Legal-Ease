@@ -1,8 +1,22 @@
 import { contract } from '@/lib/data';
 import { ClauseCard } from '@/components/contract/clause-card';
 import { FileText } from 'lucide-react';
+import { analyzeClauseRisk } from '@/ai/flows/analyze-clause-risk';
 
 export default async function ContractPage() {
+  const riskAnalyses = await Promise.all(
+    contract.clauses.map(async (clause) => {
+      const analysis = await analyzeClauseRisk({ clause: clause.text });
+      return { ...analysis, clauseId: clause.id };
+    })
+  );
+
+  const clausesWithRisk = contract.clauses.map(clause => {
+    const risk = riskAnalyses.find(r => r.clauseId === clause.id);
+    return { ...clause, risk };
+  });
+
+
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       <div className="flex items-start gap-4">
@@ -17,8 +31,8 @@ export default async function ContractPage() {
         </div>
       </div>
       <div className="mt-8 space-y-4">
-        {contract.clauses.map((clause) => (
-          <ClauseCard key={clause.id} clause={clause} />
+        {clausesWithRisk.map((clause) => (
+          <ClauseCard key={clause.id} clause={clause} initialRiskAnalysis={clause.risk!} />
         ))}
       </div>
     </div>

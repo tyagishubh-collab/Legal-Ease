@@ -5,12 +5,14 @@ import { RiskDistributionChart } from '@/components/dashboard/risk-distribution-
 import { StatCards } from '@/components/dashboard/stat-cards';
 import { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ClauseCard } from '@/components/contract/clause-card';
 
 async function DashboardData() {
   const riskAnalyses = await Promise.all(
-    contract.clauses.map((clause) =>
-      analyzeClauseRisk({ clause: clause.text })
-    )
+    contract.clauses.map(async (clause) => {
+      const analysis = await analyzeClauseRisk({ clause: clause.text });
+      return { ...analysis, clauseId: clause.id };
+    })
   );
 
   const totalClauses = contract.clauses.length;
@@ -34,17 +36,37 @@ async function DashboardData() {
     { name: 'Medium Risk', value: riskCounts.medium, fill: 'var(--color-chart-4)' },
     { name: 'High Risk', value: riskCounts.high, fill: 'var(--color-chart-3)' },
   ];
+  
+  const clausesWithRisk = contract.clauses.map(clause => {
+    const risk = riskAnalyses.find(r => r.clauseId === clause.id);
+    return { ...clause, risk };
+  });
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
-      <div className="lg:col-span-2">
-        <SafetyScore value={safetyScore} />
+    <div className="space-y-8">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+        <div className="lg:col-span-2">
+          <SafetyScore value={safetyScore} />
+        </div>
+        <div className="lg:col-span-2">
+          <RiskDistributionChart data={riskData} />
+        </div>
+        <div className="lg:col-span-4">
+          <StatCards riskCounts={riskCounts} totalClauses={totalClauses} />
+        </div>
       </div>
-      <div className="lg:col-span-2">
-        <RiskDistributionChart data={riskData} />
-      </div>
-      <div className="lg:col-span-4">
-        <StatCards riskCounts={riskCounts} totalClauses={totalClauses} />
+      <div>
+        <h2 className="font-headline text-2xl font-bold tracking-tight">
+          Clause Analysis
+        </h2>
+        <p className="mt-1 text-muted-foreground">
+          A detailed breakdown of each clause's risk.
+        </p>
+        <div className="mt-6 space-y-4">
+          {clausesWithRisk.map((clause) => (
+            <ClauseCard key={clause.id} clause={clause} initialRiskAnalysis={clause.risk!} />
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -78,6 +100,11 @@ function DashboardSkeleton() {
         <Skeleton className="h-24" />
         <Skeleton className="h-24" />
         <Skeleton className="h-24" />
+      </div>
+      <div className="lg:col-span-4 space-y-4 mt-8">
+        <Skeleton className="h-32 w-full" />
+        <Skeleton className="h-32 w-full" />
+        <Skeleton className="h-32 w-full" />
       </div>
     </div>
   );

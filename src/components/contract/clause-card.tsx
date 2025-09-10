@@ -1,19 +1,17 @@
-import type { Clause } from '@/lib/types';
-import { analyzeClauseRisk } from '@/ai/flows/analyze-clause-risk';
+import type { Clause, RiskAnalysis } from '@/lib/types';
 import { ClauseCardClient } from './clause-card-client';
 import { Skeleton } from '../ui/skeleton';
 import { Suspense } from 'react';
 
 type ClauseCardProps = {
   clause: Clause;
+  initialRiskAnalysis: RiskAnalysis;
 };
 
-export async function ClauseCard({ clause }: ClauseCardProps) {
-  const riskAnalysis = await analyzeClauseRisk({ clause: clause.text });
-
+export function ClauseCard({ clause, initialRiskAnalysis }: ClauseCardProps) {
   return (
     <Suspense fallback={<Skeleton className="h-48 w-full" />}>
-      <ClauseCardClient clause={clause} initialRiskAnalysis={riskAnalysis} />
+      <ClauseCardClient clause={clause} initialRiskAnalysis={initialRiskAnalysis} />
     </Suspense>
   );
 }
