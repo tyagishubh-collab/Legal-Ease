@@ -64,8 +64,8 @@ export function RiskDistributionChart({ data }: RiskDistributionChartProps) {
               content={<ChartTooltipContent hideLabel />}
             />
             <Pie data={data} dataKey="value" nameKey="name" innerRadius="60%">
-              {data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.fill} />
+              {data.map((entry) => (
+                <Cell key={`cell-${entry.name}`} fill={entry.fill} />
               ))}
             </Pie>
             <ChartLegend
