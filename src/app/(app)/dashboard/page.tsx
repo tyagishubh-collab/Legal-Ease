@@ -6,16 +6,20 @@ import { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ClauseCard } from '@/components/contract/clause-card';
 import type { RiskAnalysis } from '@/lib/types';
+import { Tabs, TabsContent, TabsTrigger, TabsList } from '@/components/ui/tabs';
+import { FileText, Shield } from 'lucide-react';
 
 async function DashboardData() {
-  const riskAnalyses: (RiskAnalysis & { clauseId: string })[] = contract.riskAnalyses;
+  const riskAnalyses: (RiskAnalysis & { clauseId: string })[] =
+    contract.riskAnalyses;
 
   const totalClauses = contract.clauses.length;
   const totalRiskScore = riskAnalyses.reduce(
     (sum, analysis) => sum + analysis.riskScore,
     0
   );
-  const averageRiskScore = totalClauses > 0 ? totalRiskScore / totalClauses : 0;
+  const averageRiskScore =
+    totalClauses > 0 ? totalRiskScore / totalClauses : 0;
   const safetyScore = 100 - averageRiskScore;
 
   const riskCounts = riskAnalyses.reduce(
@@ -28,42 +32,64 @@ async function DashboardData() {
 
   const riskData = [
     { name: 'Low Risk', value: riskCounts.low, fill: 'var(--color-chart-5)' },
-    { name: 'Medium Risk', value: riskCounts.medium, fill: 'var(--color-chart-4)' },
+    {
+      name: 'Medium Risk',
+      value: riskCounts.medium,
+      fill: 'var(--color-chart-4)',
+    },
     { name: 'High Risk', value: riskCounts.high, fill: 'var(--color-chart-3)' },
   ];
-  
-  const clausesWithRisk = contract.clauses.map(clause => {
-    const risk = riskAnalyses.find(r => r.clauseId === clause.id);
+
+  const clausesWithRisk = contract.clauses.map((clause) => {
+    const risk = riskAnalyses.find((r) => r.clauseId === clause.id);
     return { ...clause, risk };
   });
 
   return (
-    <div className="space-y-8">
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
-        <div className="lg:col-span-2">
-          <SafetyScore value={safetyScore} />
+    <Tabs defaultValue="overview">
+      <TabsList className="mb-6 grid h-auto w-full grid-cols-1 sm:w-auto sm:grid-cols-2">
+        <TabsTrigger value="overview" className="h-10 gap-2">
+          <Shield /> Overview
+        </TabsTrigger>
+        <TabsTrigger value="clauses" className="h-10 gap-2">
+          <FileText /> Clause Analysis
+        </TabsTrigger>
+      </TabsList>
+      <TabsContent value="overview">
+        <div className="space-y-8">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+            <div className="lg:col-span-2">
+              <SafetyScore value={safetyScore} />
+            </div>
+            <div className="lg:col-span-2">
+              <RiskDistributionChart data={riskData} />
+            </div>
+            <div className="lg:col-span-4">
+              <StatCards riskCounts={riskCounts} totalClauses={totalClauses} />
+            </div>
+          </div>
         </div>
-        <div className="lg:col-span-2">
-          <RiskDistributionChart data={riskData} />
+      </TabsContent>
+      <TabsContent value="clauses">
+        <div>
+          <h2 className="font-headline text-2xl font-bold tracking-tight">
+            Clause Analysis
+          </h2>
+          <p className="mt-1 text-muted-foreground">
+            A detailed breakdown of each clause's risk.
+          </p>
+          <div className="mt-6 space-y-4">
+            {clausesWithRisk.map((clause) => (
+              <ClauseCard
+                key={clause.id}
+                clause={clause}
+                initialRiskAnalysis={clause.risk!}
+              />
+            ))}
+          </div>
         </div>
-        <div className="lg:col-span-4">
-          <StatCards riskCounts={riskCounts} totalClauses={totalClauses} />
-        </div>
-      </div>
-      <div>
-        <h2 className="font-headline text-2xl font-bold tracking-tight">
-          Clause Analysis
-        </h2>
-        <p className="mt-1 text-muted-foreground">
-          A detailed breakdown of each clause's risk.
-        </p>
-        <div className="mt-6 space-y-4">
-          {clausesWithRisk.map((clause) => (
-            <ClauseCard key={clause.id} clause={clause} initialRiskAnalysis={clause.risk!} />
-          ))}
-        </div>
-      </div>
-    </div>
+      </TabsContent>
+    </Tabs>
   );
 }
 
@@ -88,18 +114,16 @@ export default async function DashboardPage() {
 
 function DashboardSkeleton() {
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
-      <Skeleton className="h-64 lg:col-span-2" />
-      <Skeleton className="h-64 lg:col-span-2" />
-      <div className="lg:col-span-4 grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-8">
-        <Skeleton className="h-24" />
-        <Skeleton className="h-24" />
-        <Skeleton className="h-24" />
-      </div>
-      <div className="lg:col-span-4 space-y-4 mt-8">
-        <Skeleton className="h-32 w-full" />
-        <Skeleton className="h-32 w-full" />
-        <Skeleton className="h-32 w-full" />
+    <div className="space-y-6">
+       <Skeleton className="h-12 w-full sm:w-96" />
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+        <Skeleton className="h-64 lg:col-span-2" />
+        <Skeleton className="h-64 lg:col-span-2" />
+        <div className="lg:col-span-4 grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-8">
+          <Skeleton className="h-24" />
+          <Skeleton className="h-24" />
+          <Skeleton className="h-24" />
+        </div>
       </div>
     </div>
   );

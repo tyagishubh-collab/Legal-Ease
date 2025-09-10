@@ -65,4 +65,9 @@
   body {
     @apply bg-background text-foreground;
   }
+  .dark {
+    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'  width='22' height='22' viewport='0 0 100 100' style='fill:black;font-size:12px;'><circle cx='11' cy='11' r='10' fill='white' stroke='white' stroke-width='2' style='filter: drop-shadow(0 0 2px white) drop-shadow(0 0 4px white);'/></svg>")
+        11 11,
+      auto;
+  }
 }

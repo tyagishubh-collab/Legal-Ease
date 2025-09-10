@@ -10,7 +10,9 @@ import {
 import AppNav from '@/components/layout/app-nav';
 import { Logo } from '@/components/layout/logo';
 import { Button } from '@/components/ui/button';
-import { LogOut } from 'lucide-react';
+import { LogOut, User } from 'lucide-react';
+import { ThemeToggle } from '../ui/theme-toggle';
+import { Avatar, AvatarFallback } from '../ui/avatar';
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   return (
@@ -39,6 +41,14 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             </div>
             <div className="flex-1">
               {/* Optional: Add a search bar or other header content here */}
+            </div>
+            <div className="flex items-center gap-4">
+              <ThemeToggle />
+              <Avatar className="h-9 w-9">
+                <AvatarFallback>
+                  <User />
+                </AvatarFallback>
+              </Avatar>
             </div>
           </header>
           <main className="flex-1 overflow-auto">{children}</main>
