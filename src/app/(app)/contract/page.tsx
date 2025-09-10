@@ -2,14 +2,17 @@ import { contract } from '@/lib/data';
 import { ClauseCard } from '@/components/contract/clause-card';
 import { FileText } from 'lucide-react';
 import { analyzeClauseRisk } from '@/ai/flows/analyze-clause-risk';
+import type { RiskAnalysis } from '@/lib/types';
 
 export default async function ContractPage() {
-  const riskAnalyses = await Promise.all(
-    contract.clauses.map(async (clause) => {
-      const analysis = await analyzeClauseRisk({ clause: clause.text });
-      return { ...analysis, clauseId: clause.id };
-    })
-  );
+  const riskAnalyses: (RiskAnalysis & { clauseId: string })[] = [];
+  for (const clause of contract.clauses) {
+    const analysis = await analyzeClauseRisk({ clause: clause.text });
+    riskAnalyses.push({ ...analysis, clauseId: clause.id });
+     // Add a small delay to be respectful of API rate limits
+    await new Promise(resolve => setTimeout(resolve, 200));
+  }
+
 
   const clausesWithRisk = contract.clauses.map(clause => {
     const risk = riskAnalyses.find(r => r.clauseId === clause.id);

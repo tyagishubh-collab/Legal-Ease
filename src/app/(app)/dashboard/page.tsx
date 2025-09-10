@@ -6,21 +6,24 @@ import { StatCards } from '@/components/dashboard/stat-cards';
 import { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ClauseCard } from '@/components/contract/clause-card';
+import type { RiskAnalysis } from '@/lib/types';
 
 async function DashboardData() {
-  const riskAnalyses = await Promise.all(
-    contract.clauses.map(async (clause) => {
-      const analysis = await analyzeClauseRisk({ clause: clause.text });
-      return { ...analysis, clauseId: clause.id };
-    })
-  );
+  const riskAnalyses: (RiskAnalysis & { clauseId: string })[] = [];
+  for (const clause of contract.clauses) {
+    const analysis = await analyzeClauseRisk({ clause: clause.text });
+    riskAnalyses.push({ ...analysis, clauseId: clause.id });
+    // Add a small delay to be respectful of API rate limits
+    await new Promise(resolve => setTimeout(resolve, 200));
+  }
+
 
   const totalClauses = contract.clauses.length;
   const totalRiskScore = riskAnalyses.reduce(
     (sum, analysis) => sum + analysis.riskScore,
     0
   );
-  const averageRiskScore = totalRiskScore / totalClauses;
+  const averageRiskScore = totalClauses > 0 ? totalRiskScore / totalClauses : 0;
   const safetyScore = 100 - averageRiskScore;
 
   const riskCounts = riskAnalyses.reduce(
