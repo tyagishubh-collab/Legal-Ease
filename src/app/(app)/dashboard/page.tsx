@@ -47,7 +47,7 @@ async function DashboardData() {
 
   return (
     <Tabs defaultValue="overview">
-      <TabsList className="mb-6 grid h-auto w-full grid-cols-1 sm:w-auto sm:grid-cols-2">
+      <TabsList className="mb-6 grid h-auto w-full max-w-md grid-cols-1 sm:grid-cols-2">
         <TabsTrigger value="overview" className="h-10 gap-2">
           <Shield /> Overview
         </TabsTrigger>
@@ -56,17 +56,13 @@ async function DashboardData() {
         </TabsTrigger>
       </TabsList>
       <TabsContent value="overview">
-        <div className="space-y-8">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
-            <div className="lg:col-span-2">
+        <div className="space-y-4 lg:space-y-8">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-8">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <SafetyScore value={safetyScore} />
-            </div>
-            <div className="lg:col-span-2">
               <RiskDistributionChart data={riskData} />
             </div>
-            <div className="lg:col-span-4">
-              <StatCards riskCounts={riskCounts} totalClauses={totalClauses} />
-            </div>
+            <StatCards riskCounts={riskCounts} totalClauses={totalClauses} />
           </div>
         </div>
       </TabsContent>

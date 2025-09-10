@@ -34,7 +34,7 @@ export function StatCards({ riskCounts, totalClauses }: StatCardsProps) {
   ];
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 lg:gap-8">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
       {stats.map((stat) => (
         <Card key={stat.title}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
