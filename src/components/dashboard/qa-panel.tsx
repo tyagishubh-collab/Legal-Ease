@@ -85,7 +85,7 @@ export function QAPanel() {
           </CollapsibleTrigger>
         </CardHeader>
         <CollapsibleContent asChild>
-          <>
+          <div className="flex flex-1 flex-col overflow-hidden">
             <ScrollArea className="flex-1" ref={scrollAreaRef}>
               <div className="p-4 space-y-6">
                 {messages.length === 0 ? (
@@ -178,7 +178,7 @@ export function QAPanel() {
                 </Button>
               </form>
             </div>
-          </>
+          </div>
         </CollapsibleContent>
       </div>
     </Collapsible>
