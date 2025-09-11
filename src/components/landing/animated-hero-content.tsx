@@ -2,41 +2,36 @@
 import { ShieldCheck } from 'lucide-react';
 import { Button } from '../ui/button';
 import Link from 'next/link';
-import { useRef } from 'react';
+import { useState } from 'react';
+import type { MouseEvent } from 'react';
+
+type Ripple = {
+  key: number;
+  x: number;
+  y: number;
+  size: number;
+};
 
 export function AnimatedHeroContent() {
-  const buttonRef = useRef<HTMLButtonElement>(null);
+  const [ripples, setRipples] = useState<Ripple[]>([]);
 
-  const onButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const button = buttonRef.current;
-    if (!button) return;
-
-    const circle = document.createElement('span');
+  const onButtonClick = (e: MouseEvent<HTMLButtonElement>) => {
+    const button = e.currentTarget;
     const diameter = Math.max(button.clientWidth, button.clientHeight);
     const radius = diameter / 2;
 
-    circle.style.width = circle.style.height = `${diameter}px`;
-    circle.style.left = `${e.clientX - button.offsetLeft - radius}px`;
-    circle.style.top = `${e.clientY - button.offsetTop - radius}px`;
-    
-    // The following classes are defined in globals.css for the ripple effect
-    circle.classList.add(
-      'absolute',
-      'rounded-full',
-      'bg-white/30',
-      'pointer-events-none',
-      'transform',
-      'scale-0'
-    );
-    
-    // Custom animation class from globals.css
-    circle.style.animation = 'ripple 600ms linear';
-    
-    const rippleContainer = button.querySelector('.ripple-container');
-    if (rippleContainer) {
-      rippleContainer.appendChild(circle);
-      setTimeout(() => circle.remove(), 600);
-    }
+    const newRipple: Ripple = {
+      key: Date.now(),
+      size: diameter,
+      x: e.clientX - button.offsetLeft - radius,
+      y: e.clientY - button.offsetTop - radius,
+    };
+
+    setRipples(prev => [...prev, newRipple]);
+
+    setTimeout(() => {
+      setRipples(currentRipples => currentRipples.filter(r => r.key !== newRipple.key));
+    }, 600);
   };
 
   return (
@@ -53,15 +48,27 @@ export function AnimatedHeroContent() {
       </p>
       <div className="mt-8 fade-in-text">
         <Button
-          ref={buttonRef as any}
           asChild
           size="lg"
           className="relative overflow-hidden rounded-full border border-primary/20 bg-primary/10 px-8 py-6 font-semibold text-primary shadow-2xl shadow-primary/20 backdrop-blur-md transition-all duration-300 hover:bg-primary/20 hover:text-primary hover:-translate-y-1 hover:shadow-primary/40 dark:bg-white/5 dark:text-white/80 dark:hover:bg-white/10"
           onClick={onButtonClick}
         >
           <Link href="/dashboard">
-            <span className="ripple-container absolute inset-0 z-0"/>
             <span className="relative z-10">Get Started</span>
+            <span className="absolute inset-0 z-0">
+              {ripples.map(ripple => (
+                <span
+                  key={ripple.key}
+                  className="absolute animate-ripple rounded-full bg-white/30 pointer-events-none"
+                  style={{
+                    left: ripple.x,
+                    top: ripple.y,
+                    width: ripple.size,
+                    height: ripple.size,
+                  }}
+                />
+              ))}
+            </span>
           </Link>
         </Button>
       </div>
