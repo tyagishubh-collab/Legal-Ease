@@ -1,4 +1,4 @@
-# Firebase Studio
+# Clause Wise
 
 This is a NextJS starter in Firebase Studio.
 
