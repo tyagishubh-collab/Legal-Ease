@@ -14,21 +14,19 @@ export default async function ContractPage() {
 
 
   return (
-    <div className="flex-1 flex flex-col">
-      <div className="p-4 sm:p-6 lg:p-8">
-        <div className="flex items-start gap-4">
-          <FileText className="h-8 w-8 text-muted-foreground mt-1" />
-          <div>
-            <h1 className="font-headline text-3xl font-bold tracking-tight">
-              {contract.title}
-            </h1>
-            <p className="mt-1 text-muted-foreground">
-              A clause-by-clause analysis of your document.
-            </p>
-          </div>
+    <div className="p-4 sm:p-6 lg:p-8">
+      <div className="flex items-start gap-4">
+        <FileText className="h-8 w-8 text-muted-foreground mt-1" />
+        <div>
+          <h1 className="font-headline text-3xl font-bold tracking-tight">
+            {contract.title}
+          </h1>
+          <p className="mt-1 text-muted-foreground">
+            A clause-by-clause analysis of your document.
+          </p>
         </div>
       </div>
-      <div className="flex-1 px-4 sm:px-6 lg:px-8 pb-8">
+      <div className="mt-8">
         <Dropzone>
             <div className="space-y-4">
             {clausesWithRisk.map((clause) => (

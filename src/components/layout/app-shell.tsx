@@ -61,7 +61,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               </Avatar>
             </div>
           </header>
-          <main className="flex flex-1 flex-col">{children}</main>
+          <main className="flex-1 overflow-auto">{children}</main>
         </SidebarInset>
       </div>
     </SidebarProvider>
