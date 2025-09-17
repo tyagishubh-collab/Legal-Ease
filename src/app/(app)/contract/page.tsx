@@ -39,7 +39,7 @@ export default function ContractPage() {
             </p>
           </div>
         </div>
-        <FileUploader onFileSelect={handleFileSelect}>
+        <FileUploader onFileSelect={handleFileSelect} showFile>
           <Button>
             <UploadCloud className="mr-2 h-4 w-4" />
             Upload Document
