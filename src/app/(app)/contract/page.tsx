@@ -40,8 +40,7 @@ export default function ContractPage() {
   }
 
   return (
-    <div className="space-y-8">
-      <div className="container mx-auto px-4 py-8">
+    <div className="space-y-8 px-4 py-8 md:px-6">
         <div className="text-center">
             <h1 className="text-3xl font-bold tracking-tight">{documentTitle}</h1>
             <p className="mt-2 text-muted-foreground">
@@ -86,7 +85,6 @@ export default function ContractPage() {
 
           {analysisResult && <AnalysisResult result={analysisResult} />}
         </div>
-      </div>
     </div>
   );
 }
