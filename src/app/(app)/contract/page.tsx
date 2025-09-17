@@ -7,10 +7,9 @@ import type { Clause, RiskAnalysis } from '@/lib/types';
 import { Dropzone } from '@/components/contract/dropzone';
 import { ClauseModal } from '@/components/contract/clause-modal';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Accordion } from '@/components/ui/accordion';
 
 export default function ContractPage() {
-  const [documentTitle, setDocumentTitle] = useState(contract.title);
+  const [documentTitle, setDocumentTitle] = useState('Contract Analysis');
   const [clauses, setClauses] = useState(contract.clauses);
   const [riskAnalyses, setRiskAnalyses] = useState(contract.riskAnalyses);
   const [selectedClause, setSelectedClause] = useState<Clause & { risk: RiskAnalysis } | null>(null);
