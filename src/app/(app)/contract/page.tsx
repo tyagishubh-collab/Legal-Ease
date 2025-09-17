@@ -37,19 +37,19 @@ export default function ContractPage() {
   return (
     <>
       <div className="p-4 sm:p-6 lg:p-8 space-y-8">
+        <div className="text-center">
+            <h1 className="text-3xl font-bold tracking-tight">{documentTitle}</h1>
+            <p className="mt-2 text-muted-foreground">Upload a document to begin analysis.</p>
+        </div>
         <Dropzone onFileSelect={handleFileSelect} />
         
         <Card>
           <CardHeader>
-            <CardTitle>{documentTitle}</CardTitle>
-            <CardDescription>A clause-by-clause analysis of your document.</CardDescription>
+            <CardTitle>Clause-by-Clause Analysis</CardTitle>
+            <CardDescription>Click on a clause to view details and AI-powered insights.</CardDescription>
           </CardHeader>
           <CardContent>
-            <Accordion 
-              type="single" 
-              collapsible 
-              className="flex flex-wrap gap-4"
-            >
+            <div className="flex flex-wrap gap-4">
               {clausesWithRisk.map((clause) => (
                 <ClauseCard 
                   key={clause.id} 
@@ -57,7 +57,7 @@ export default function ContractPage() {
                   onClick={() => handleClauseClick(clause)} 
                 />
               ))}
-            </Accordion>
+            </div>
           </CardContent>
         </Card>
       </div>
