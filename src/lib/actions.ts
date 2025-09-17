@@ -55,6 +55,7 @@ export async function explainClauseForRoleAction(
 
 const answerSchema = z.object({
   question: z.string(),
+  file: z.instanceof(File).optional(),
 });
 
 export async function answerQuestionAction(
@@ -64,18 +65,23 @@ export async function answerQuestionAction(
   if (!validatedInput.success) {
     throw new Error('Invalid input for answerQuestionAction');
   }
-
-  // For this action, we need to provide the relevant clauses.
-  // In a real application, you'd implement a vector search to find relevant clauses.
-  // For now, we'll just pass all clauses.
-  const relevantClauses = contract.clauses.map(
-    (c) => `Clause: ${c.title}\nText: ${c.text}`
-  );
   
+  const { question, file } = validatedInput.data;
   const aiInput: AnswerContractQuestionsInput = {
-    question: validatedInput.data.question,
-    relevantClauses: relevantClauses,
+    question: question,
+    relevantClauses: [],
   };
+
+  if (file) {
+    const buffer = await file.arrayBuffer();
+    const base64 = Buffer.from(buffer).toString('base64');
+    aiInput.documentDataUri = `data:${file.type};base64,${base64}`;
+  } else {
+    // Fallback to using all clauses if no file is provided
+    aiInput.relevantClauses = contract.clauses.map(
+      (c) => `Clause: ${c.title}\nText: ${c.text}`
+    );
+  }
 
   return await answerContractQuestions(aiInput);
 }

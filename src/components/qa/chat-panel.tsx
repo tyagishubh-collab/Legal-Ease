@@ -33,19 +33,29 @@ export function ChatPanel() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if ((!input.trim() && !selectedFile) || isPending) return;
+    
+    let content = input;
+    if (selectedFile) {
+        content = `File: ${selectedFile.name}\n\n${input}`;
+    }
 
-    const content = selectedFile ? `Attached File: ${selectedFile.name}\n\n${input}` : input;
     const userMessage: Message = { role: 'user', content: content };
     setMessages((prev) => [...prev, userMessage]);
-    setInput('');
-    setSelectedFile(null);
-
+    
     startTransition(async () => {
-      // In a real app, you would upload the file and pass its URL or content to the action.
-      const { answer } = await answerQuestionAction({ question: content });
+      const formData = new FormData();
+      formData.append('question', input);
+      if (selectedFile) {
+        formData.append('file', selectedFile);
+      }
+
+      const { answer } = await answerQuestionAction({ question: input, file: selectedFile || undefined });
       const assistantMessage: Message = { role: 'assistant', content: answer };
       setMessages((prev) => [...prev, assistantMessage]);
     });
+    
+    setInput('');
+    setSelectedFile(null);
   };
 
   useEffect(() => {
