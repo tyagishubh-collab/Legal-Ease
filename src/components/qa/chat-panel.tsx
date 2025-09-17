@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useTransition, useRef, useEffect } from 'react';
-import { Bot, User, CornerDownLeft, Loader2, Send } from 'lucide-react';
+import { Bot, User, CornerDownLeft, Loader2, Send, Plus, Paperclip, X } from 'lucide-react';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { ScrollArea } from '../ui/scroll-area';
@@ -19,19 +19,30 @@ export function ChatPanel() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isPending, startTransition] = useTransition();
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      setSelectedFile(event.target.files[0]);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!input.trim() || isPending) return;
+    if ((!input.trim() && !selectedFile) || isPending) return;
 
-    const userMessage: Message = { role: 'user', content: input };
+    const content = selectedFile ? `Attached File: ${selectedFile.name}\n\n${input}` : input;
+    const userMessage: Message = { role: 'user', content: content };
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
+    setSelectedFile(null);
 
     startTransition(async () => {
-      const { answer } = await answerQuestionAction({ question: input });
+      // In a real app, you would upload the file and pass its URL or content to the action.
+      const { answer } = await answerQuestionAction({ question: content });
       const assistantMessage: Message = { role: 'assistant', content: answer };
       setMessages((prev) => [...prev, assistantMessage]);
     });
@@ -101,7 +112,7 @@ export function ChatPanel() {
                       }
                     )}
                   >
-                    <p className="prose prose-sm dark:prose-invert" dangerouslySetInnerHTML={{ __html: message.content.replace(/\n/g, '&lt;br /&gt;') }} />
+                    <p className="prose prose-sm dark:prose-invert" dangerouslySetInnerHTML={{ __html: message.content.replace(/\n/g, '<br />') }} />
                   </div>
                   {message.role === 'user' && (
                     <Avatar className="h-9 w-9 border">
@@ -130,20 +141,60 @@ export function ChatPanel() {
         </div>
       </ScrollArea>
       <div className="w-full bg-background/95 px-4 py-3 sm:px-6 md:absolute md:bottom-4 md:left-1/2 md:w-full md:max-w-3xl md:-translate-x-1/2 md:bg-transparent md:p-0">
-        <form onSubmit={handleSubmit} className="relative">
+        {selectedFile && (
+          <div className="mb-2 flex items-center justify-between rounded-full border bg-card p-2 pl-4 shadow-lg animate-fade-in-up">
+            <div className="flex items-center gap-3">
+              <Paperclip className="h-5 w-5 text-muted-foreground" />
+              <div className="text-sm">
+                <p className="font-medium">{selectedFile.name}</p>
+                <p className="text-xs text-muted-foreground">
+                  {(selectedFile.size / 1024).toFixed(2)} KB
+                </p>
+              </div>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 rounded-full"
+              onClick={() => setSelectedFile(null)}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
+        <form
+          onSubmit={handleSubmit}
+          className="relative flex w-full items-center rounded-full border-2 border-border/50 bg-card shadow-lg"
+        >
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="ml-2 h-10 w-10 shrink-0 rounded-full"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <Plus className="h-5 w-5" />
+            <span className="sr-only">Add file</span>
+          </Button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            className="hidden"
+            onChange={handleFileChange}
+          />
           <Input
             ref={inputRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask about your contract..."
-            className="h-14 w-full rounded-full border-2 border-border/50 bg-card pr-14 shadow-lg"
+            className="h-14 flex-1 border-none bg-transparent pr-12 text-base shadow-none focus-visible:ring-0"
             disabled={isPending}
           />
           <Button
             type="submit"
             size="icon"
             className="absolute right-3 top-1/2 h-10 w-10 -translate-y-1/2 rounded-full"
-            disabled={isPending || !input.trim()}
+            disabled={isPending || (!input.trim() && !selectedFile)}
           >
             {isPending ? (
               <Loader2 className="h-5 w-5 animate-spin" />
