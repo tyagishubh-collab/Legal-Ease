@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { contract } from '@/lib/data';
 import { ClauseCard } from '@/components/contract/clause-card';
 import { FileText, UploadCloud } from 'lucide-react';
@@ -9,6 +10,7 @@ import { FileUploader } from '@/components/contract/file-uploader';
 import { Button } from '@/components/ui/button';
 
 export default function ContractPage() {
+  const [documentTitle, setDocumentTitle] = useState(contract.title);
   const riskAnalyses: (RiskAnalysis & { clauseId: string })[] = contract.riskAnalyses;
 
   const clausesWithRisk = contract.clauses.map(clause => {
@@ -20,6 +22,7 @@ export default function ContractPage() {
     // In a real app, you would handle the file upload here.
     // For example, upload to a server or process on the client.
     console.log('File selected:', file.name);
+    setDocumentTitle(file.name);
   };
 
   return (
@@ -29,7 +32,7 @@ export default function ContractPage() {
           <FileText className="h-8 w-8 text-muted-foreground mt-1" />
           <div>
             <h1 className="font-headline text-3xl font-bold tracking-tight">
-              {contract.title}
+              {documentTitle}
             </h1>
             <p className="mt-1 text-muted-foreground">
               A clause-by-clause analysis of your document.
