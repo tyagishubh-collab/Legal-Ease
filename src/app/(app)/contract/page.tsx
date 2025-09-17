@@ -55,7 +55,7 @@ export default function ContractPage() {
                         <CardDescription>Review each clause and its associated risk analysis below.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <Accordion type="single" collapsible className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <Accordion type="single" collapsible className="flex flex-wrap gap-4">
                         {clausesWithRisk.map((clause) => (
                           <ClauseCard key={clause.id} clause={clause} initialRiskAnalysis={clause.risk!} />
                         ))}

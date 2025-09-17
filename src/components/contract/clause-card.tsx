@@ -19,7 +19,13 @@ const riskColorMap = {
 
 export function ClauseCard({ clause, initialRiskAnalysis }: ClauseCardProps) {
   return (
-    <AccordionItem value={clause.id} className={cn('border-b-0 overflow-hidden rounded-lg transition-all', riskColorMap[initialRiskAnalysis.riskLevel])}>
+    <AccordionItem 
+      value={clause.id} 
+      className={cn(
+        'border-b-0 overflow-hidden rounded-lg transition-all w-full md:w-[calc(50%-0.5rem)]', 
+        riskColorMap[initialRiskAnalysis.riskLevel]
+      )}
+    >
       <Suspense fallback={<Skeleton className="h-48 w-full" />}>
         <ClauseCardClient clause={clause} initialRiskAnalysis={initialRiskAnalysis} />
       </Suspense>
