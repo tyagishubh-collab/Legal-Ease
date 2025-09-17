@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/sidebar';
 import Link from 'next/link';
 import { LayoutDashboard, FileText, BotMessageSquare } from 'lucide-react';
+import { useSidebar } from '../ui/sidebar';
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -17,6 +18,7 @@ const navItems = [
 
 export default function AppNav() {
   const pathname = usePathname();
+  const { state } = useSidebar();
 
   return (
     <SidebarMenu>
@@ -25,7 +27,10 @@ export default function AppNav() {
           <SidebarMenuButton
             asChild
             isActive={pathname.startsWith(item.href)}
-            tooltip={item.label}
+            tooltip={{
+              content: item.label,
+              hidden: state === 'expanded',
+            }}
           >
             <Link href={item.href}>
               <item.icon />

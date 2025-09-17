@@ -20,7 +20,13 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       <div className="flex min-h-screen">
         <Sidebar>
           <SidebarHeader className="border-b">
-            <Logo />
+            <div className="flex h-14 items-center gap-4 px-3.5">
+              <Logo />
+              <div className="flex-1" />
+              <div className="md:hidden">
+                <SidebarTrigger />
+              </div>
+            </div>
           </SidebarHeader>
           <SidebarContent>
             <AppNav />
@@ -36,7 +42,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </Sidebar>
         <SidebarInset>
           <header className="flex h-14 items-center gap-4 border-b bg-background px-4 lg:h-[60px] lg:px-6">
-            <div className="md:hidden">
+            <div className="hidden md:block">
               <SidebarTrigger />
             </div>
             <div className="flex-1">
