@@ -97,8 +97,9 @@ export function FileUploader({ children, onFileSelect, className, showFile = fal
         accept=".pdf,.docx,.png,.jpg,.jpeg"
         onChange={handleInputChange}
       />
-      {children && <div onClick={(e) => e.stopPropagation()}>{children}</div>}
-
+      
+      {children}
+      
       {isDragging && (
         <div className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-primary bg-background/80 backdrop-blur-sm">
           <UploadCloud className="h-16 w-16 text-primary" />
@@ -118,7 +119,7 @@ export function FileUploader({ children, onFileSelect, className, showFile = fal
                     </p>
                 </div>
             </div>
-            <Button variant="ghost" size="icon" onClick={clearFile}>
+            <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); clearFile();}}>
                 <X className="h-4 w-4" />
             </Button>
         </div>
