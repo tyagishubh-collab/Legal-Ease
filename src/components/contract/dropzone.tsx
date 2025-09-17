@@ -14,6 +14,7 @@ export function Dropzone({ children, onFileSelect }: DropzoneProps) {
     <FileUploader onFileSelect={onFileSelect} className="relative h-full w-full rounded-lg transition-all duration-300">
       <div
         className={cn('relative h-full w-full rounded-lg transition-all duration-300')}
+        onClick={(e) => e.stopPropagation()}
       >
         {children}
       </div>

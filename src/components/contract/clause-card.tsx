@@ -1,34 +1,41 @@
 import type { Clause, RiskAnalysis } from '@/lib/types';
-import { ClauseCardClient } from './clause-card-client';
-import { Skeleton } from '../ui/skeleton';
-import { Suspense } from 'react';
-import { AccordionItem } from '../ui/accordion';
 import { cn } from '@/lib/utils';
-
+import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 type ClauseCardProps = {
-  clause: Clause;
-  initialRiskAnalysis: RiskAnalysis;
+  clause: Clause & { risk: RiskAnalysis };
+  onClick: () => void;
 };
 
 const riskColorMap = {
-  high: 'border-red-500/50 bg-red-500/5',
-  medium: 'border-amber-500/50 bg-amber-500/5',
-  low: 'border-green-500/50 bg-green-500/5',
+  high: 'border-red-500/50 bg-red-500/5 hover:bg-red-500/10',
+  medium: 'border-amber-500/50 bg-amber-500/5 hover:bg-amber-500/10',
+  low: 'border-green-500/50 bg-green-500/5 hover:bg-green-500/10',
 };
 
-export function ClauseCard({ clause, initialRiskAnalysis }: ClauseCardProps) {
+export function ClauseCard({ clause, onClick }: ClauseCardProps) {
   return (
-    <AccordionItem 
-      value={clause.id} 
+    <Card
+      onClick={onClick}
       className={cn(
-        'border-b-0 overflow-hidden rounded-lg transition-all w-full md:w-[calc(50%-0.5rem)]', 
-        riskColorMap[initialRiskAnalysis.riskLevel]
+        'cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-lg',
+        riskColorMap[clause.risk.riskLevel]
       )}
     >
-      <Suspense fallback={<Skeleton className="h-48 w-full" />}>
-        <ClauseCardClient clause={clause} initialRiskAnalysis={initialRiskAnalysis} />
-      </Suspense>
-    </AccordionItem>
+      <CardHeader>
+        <div className="flex items-center justify-between gap-4">
+          <CardTitle className="text-lg font-headline tracking-tight">
+            {clause.title}
+          </CardTitle>
+          <Badge variant="outline" className="font-mono text-xs whitespace-nowrap">
+            Risk: {clause.risk.riskScore}
+          </Badge>
+        </div>
+        <CardDescription className="pt-2 line-clamp-3 text-xs">
+          {clause.text}
+        </CardDescription>
+      </CardHeader>
+    </Card>
   );
 }

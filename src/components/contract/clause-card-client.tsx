@@ -2,10 +2,6 @@
 
 import { useState, useTransition } from 'react';
 import type { Clause, RiskAnalysis, Summary, Explanation } from '@/lib/types';
-import {
-  AccordionContent,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Select,
@@ -21,20 +17,18 @@ import {
   explainClauseForRoleAction,
 } from '@/lib/actions';
 import { Skeleton } from '../ui/skeleton';
-import { AlertCircle, FileText, Lightbulb, Users } from 'lucide-react';
+import { FileText, Lightbulb, Users } from 'lucide-react';
+import { ScrollArea } from '../ui/scroll-area';
+import { Separator } from '../ui/separator';
 
 type ClauseCardClientProps = {
-  clause: Clause;
-  initialRiskAnalysis: RiskAnalysis;
+  clause: Clause & { risk: RiskAnalysis };
 };
 
 type DetailLevel = 'short' | 'medium' | 'verbose';
 type UserRole = 'lawyer' | 'entrepreneur' | 'student';
 
-export function ClauseCardClient({
-  clause,
-  initialRiskAnalysis,
-}: ClauseCardClientProps) {
+export function ClauseCardClient({ clause }: ClauseCardClientProps) {
   const [isPending, startTransition] = useTransition();
   const [summary, setSummary] = useState<Summary | null>(null);
   const [explanation, setExplanation] = useState<Explanation | null>(null);
@@ -67,25 +61,11 @@ export function ClauseCardClient({
 
   return (
     <>
-      <AccordionTrigger className="px-6 py-4 text-left hover:no-underline">
-        <div className="flex items-center gap-4 w-full">
-          <AlertCircle
-            className={cn('h-5 w-5 flex-shrink-0', {
-              'text-red-500': initialRiskAnalysis.riskLevel === 'high',
-              'text-amber-500': initialRiskAnalysis.riskLevel === 'medium',
-              'text-green-500': initialRiskAnalysis.riskLevel === 'low',
-            })}
-          />
-          <h3 className="font-headline text-lg font-semibold tracking-tight text-left flex-1">
-            {clause.title}
-          </h3>
-          <Badge variant="outline" className="ml-2 font-mono text-xs">
-            Risk: {initialRiskAnalysis.riskScore}
-          </Badge>
-        </div>
-      </AccordionTrigger>
-      <AccordionContent className="px-6 pb-6">
-        <p className="mb-6 text-muted-foreground">{clause.text}</p>
+      <ScrollArea className="h-48 px-6">
+        <p className="py-4 text-sm text-muted-foreground">{clause.text}</p>
+      </ScrollArea>
+      <Separator />
+      <div className="p-6 pt-4">
         <Tabs defaultValue="summary" className="w-full">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger
@@ -94,7 +74,7 @@ export function ClauseCardClient({
                 !summary && handleSummaryGeneration(detailLevel)
               }
             >
-              <FileText className="mr-2" /> Summary
+              <FileText className="mr-2 h-4 w-4" /> Summary
             </TabsTrigger>
             <TabsTrigger
               value="explanation"
@@ -102,10 +82,10 @@ export function ClauseCardClient({
                 !explanation && handleExplanationGeneration(userRole)
               }
             >
-              <Lightbulb className="mr-2" /> Explanation
+              <Lightbulb className="mr-2 h-4 w-4" /> Explanation
             </TabsTrigger>
             <TabsTrigger value="entities">
-              <Users className="mr-2" /> Entities
+              <Users className="mr-2 h-4 w-4" /> Entities
             </TabsTrigger>
           </TabsList>
           <TabsContent value="summary" className="mt-4">
@@ -135,7 +115,7 @@ export function ClauseCardClient({
               </div>
             ) : (
               summary && (
-                <div className="space-y-4">
+                <div className="space-y-4 text-sm">
                   <p>{summary.summary}</p>
                   <ul className="list-disc space-y-2 pl-5">
                     {summary.bulletPoints.map((point, i) => (
@@ -167,7 +147,7 @@ export function ClauseCardClient({
                     <Skeleton className="h-4 w-2/3" />
                   </div>
                 ) : (
-                  explanation && <p>{explanation.explanation}</p>
+                  explanation && <p className="text-sm">{explanation.explanation}</p>
                 )}
               </div>
             </Tabs>
@@ -189,7 +169,7 @@ export function ClauseCardClient({
             </div>
           </TabsContent>
         </Tabs>
-      </AccordionContent>
+      </div>
     </>
   );
 }
