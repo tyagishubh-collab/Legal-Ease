@@ -67,7 +67,7 @@ export function ClauseCardClient({
 
   return (
     <>
-      <AccordionTrigger className="px-6 py-4 text-left hover:no-underline w-full">
+      <AccordionTrigger className="px-6 py-4 text-left hover:no-underline">
         <div className="flex items-center gap-4 w-full">
           <AlertCircle
             className={cn('h-5 w-5 flex-shrink-0', {

@@ -21,8 +21,6 @@ export default function ContractPage() {
   });
 
   const handleFileSelect = (file: File) => {
-    // In a real app, you would handle the file upload here.
-    // For example, upload to a server or process on the client.
     console.log('File selected:', file.name);
     setDocumentTitle(file.name);
   };
@@ -57,12 +55,10 @@ export default function ContractPage() {
                         <CardDescription>Review each clause and its associated risk analysis below.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <Accordion type="single" collapsible className="space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {clausesWithRisk.map((clause) => (
-                              <ClauseCard key={clause.id} clause={clause} initialRiskAnalysis={clause.risk!} />
-                            ))}
-                        </div>
+                      <Accordion type="single" collapsible className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {clausesWithRisk.map((clause) => (
+                          <ClauseCard key={clause.id} clause={clause} initialRiskAnalysis={clause.risk!} />
+                        ))}
                       </Accordion>
                     </CardContent>
                 </Card>
