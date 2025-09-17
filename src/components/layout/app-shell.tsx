@@ -10,7 +10,7 @@ import {
 import AppNav from '@/components/layout/app-nav';
 import { Logo } from '@/components/layout/logo';
 import { Button } from '@/components/ui/button';
-import { LogOut, User } from 'lucide-react';
+import { LogOut, User, UploadCloud } from 'lucide-react';
 import { ThemeToggle } from '../ui/theme-toggle';
 import { Avatar, AvatarFallback } from '../ui/avatar';
 
@@ -41,7 +41,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           </SidebarFooter>
         </Sidebar>
         <SidebarInset>
-          <header className="flex h-14 items-center gap-4 border-b bg-background px-4 lg:h-[60px] lg:px-6">
+          <header className="flex h-14 shrink-0 items-center gap-4 border-b bg-background px-4 lg:h-[60px] lg:px-6">
             <div className="hidden md:block">
               <SidebarTrigger />
             </div>
@@ -49,6 +49,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               {/* Optional: Add a search bar or other header content here */}
             </div>
             <div className="flex items-center gap-4">
+               <Button>
+                <UploadCloud className="mr-2 h-4 w-4" />
+                Upload Document
+              </Button>
               <ThemeToggle />
               <Avatar className="h-9 w-9">
                 <AvatarFallback>
@@ -57,7 +61,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               </Avatar>
             </div>
           </header>
-          <main className="flex-1">{children}</main>
+          <main className="flex flex-1 flex-col">{children}</main>
         </SidebarInset>
       </div>
     </SidebarProvider>
