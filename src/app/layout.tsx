@@ -3,8 +3,8 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 
 export const metadata: Metadata = {
-  title: 'ClauseWise',
-  description: 'AI-powered legal document analysis by ClauseWise',
+  title: 'LegalEase',
+  description: 'AI-powered legal document analysis by LegalEase',
 };
 
 export default function RootLayout({

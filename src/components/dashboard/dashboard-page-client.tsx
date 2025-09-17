@@ -85,7 +85,7 @@ export function DashboardPageClient({
     
     doc.setFont('Poppins', 'bold');
     doc.setFontSize(22);
-    doc.text('ClauseWise Report', 14, 22);
+    doc.text('LegalEase Report', 14, 22);
     
     doc.setFont('Inter', 'normal');
     doc.setFontSize(12);
@@ -126,7 +126,7 @@ export function DashboardPageClient({
       });
     }
 
-    doc.save('ClauseWise-Report.pdf');
+    doc.save('LegalEase-Report.pdf');
   };
 
   const drilldownClauses =

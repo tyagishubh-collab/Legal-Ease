@@ -15,7 +15,7 @@ export function Logo({ className }: { className?: string }) {
         <ShieldCheck className="h-5 w-5" />
       </div>
       <div className="font-headline text-xl font-bold group-data-[collapsible=icon]:hidden">
-        ClauseWise
+        LegalEase
       </div>
     </Link>
   );

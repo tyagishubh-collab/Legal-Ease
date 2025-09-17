@@ -41,7 +41,7 @@ export function AnimatedHeroContent() {
         <ShieldCheck className="h-10 w-10 text-primary transition-transform duration-300 group-hover:rotate-12" />
       </div>
       <h1 className="font-headline text-4xl font-bold tracking-tight text-foreground md:text-5xl">
-        <span className="typing-effect inline-block">Welcome to <span className="text-primary">ClauseWise</span></span>
+        <span className="typing-effect inline-block">Welcome to <span className="text-primary">LegalEase</span></span>
       </h1>
       <p className="mt-4 max-w-xl text-lg text-muted-foreground fade-in-text">
         Your AI-powered legal assistant. Analyze documents, understand complex clauses, and assess risks with confidence.
