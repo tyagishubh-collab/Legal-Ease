@@ -88,7 +88,7 @@ export function FileUploader({ children, onFileSelect, className, showFile = fal
       onDragLeave={handleDragLeave}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
-      onClick={!children ? triggerFileSelect : undefined}
+      onClick={triggerFileSelect}
     >
       <input
         ref={inputRef}
@@ -97,7 +97,7 @@ export function FileUploader({ children, onFileSelect, className, showFile = fal
         accept=".pdf,.docx,.png,.jpg,.jpeg"
         onChange={handleInputChange}
       />
-      {children && <div onClick={triggerFileSelect}>{children}</div>}
+      {children && <div onClick={(e) => e.stopPropagation()}>{children}</div>}
 
       {isDragging && (
         <div className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-primary bg-background/80 backdrop-blur-sm">
