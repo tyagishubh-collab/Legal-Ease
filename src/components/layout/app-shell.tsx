@@ -13,8 +13,16 @@ import { Button } from '@/components/ui/button';
 import { LogOut, User, UploadCloud } from 'lucide-react';
 import { ThemeToggle } from '../ui/theme-toggle';
 import { Avatar, AvatarFallback } from '../ui/avatar';
+import { FileUploader } from '../contract/file-uploader';
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
+  
+  const handleFileSelect = (file: File) => {
+    // In a real app, you might navigate to the contract page
+    // or start a global upload process.
+    console.log('File selected in AppShell:', file.name);
+  };
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen">
@@ -49,10 +57,12 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               {/* Optional: Add a search bar or other header content here */}
             </div>
             <div className="flex items-center gap-4">
-               <Button>
-                <UploadCloud className="mr-2 h-4 w-4" />
-                Upload Document
-              </Button>
+              <FileUploader onFileSelect={handleFileSelect}>
+                <Button>
+                  <UploadCloud className="mr-2 h-4 w-4" />
+                  Upload Document
+                </Button>
+              </FileUploader>
               <ThemeToggle />
               <Avatar className="h-9 w-9">
                 <AvatarFallback>

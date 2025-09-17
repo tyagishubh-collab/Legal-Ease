@@ -1,10 +1,12 @@
+'use client';
+
 import { contract } from '@/lib/data';
 import { ClauseCard } from '@/components/contract/clause-card';
 import { FileText } from 'lucide-react';
 import type { RiskAnalysis } from '@/lib/types';
 import { Dropzone } from '@/components/contract/dropzone';
 
-export default async function ContractPage() {
+export default function ContractPage() {
   const riskAnalyses: (RiskAnalysis & { clauseId: string })[] = contract.riskAnalyses;
 
   const clausesWithRisk = contract.clauses.map(clause => {
@@ -12,6 +14,11 @@ export default async function ContractPage() {
     return { ...clause, risk };
   });
 
+  const handleFileSelect = (file: File) => {
+    // In a real app, you would handle the file upload here.
+    // For example, upload to a server or process on the client.
+    console.log('File selected:', file.name);
+  };
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
@@ -27,7 +34,7 @@ export default async function ContractPage() {
         </div>
       </div>
       <div className="mt-8">
-        <Dropzone>
+        <Dropzone onFileSelect={handleFileSelect}>
             <div className="space-y-4">
             {clausesWithRisk.map((clause) => (
               <ClauseCard key={clause.id} clause={clause} initialRiskAnalysis={clause.risk!} />
