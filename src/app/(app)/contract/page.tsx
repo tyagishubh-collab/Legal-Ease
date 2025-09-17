@@ -40,8 +40,8 @@ export default function ContractPage() {
   }
 
   return (
-    <div className="space-y-8 px-4 py-8 md:px-6">
-        <div className="text-center">
+    <div className="space-y-8 py-8">
+        <div className="text-center px-4 md:px-6">
             <h1 className="text-3xl font-bold tracking-tight">{documentTitle}</h1>
             <p className="mt-2 text-muted-foreground">
               {analysisResult 
@@ -50,7 +50,7 @@ export default function ContractPage() {
               }
             </p>
         </div>
-        <div className="mt-8">
+        <div className="mt-8 px-4 md:px-6">
           <Dropzone onFileSelect={handleFileSelect} />
         </div>
         
@@ -61,7 +61,7 @@ export default function ContractPage() {
             </Button>
         </div>
 
-        <div className="mt-8 space-y-8">
+        <div className="mt-8 space-y-8 px-4 md:px-6">
           {error && (
               <Card className="bg-destructive/10 border-destructive text-center">
                   <CardHeader>
