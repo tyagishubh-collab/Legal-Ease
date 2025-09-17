@@ -5,43 +5,16 @@
  *
  * The flow takes a document as input and returns a structured object containing arrays of clauses for high, medium, and low risk categories.
  *   - analyzeDocumentRisk - A function that analyzes the risk of clauses in a document.
- *   - AnalyzeDocumentRiskInput - The input type for the analyzeDocumentRisk function.
- *   - AnalyzeDocumentRiskOutput - The return type for the analyzeDocumentRisk function.
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import {
+    AnalyzeDocumentRiskInput,
+    AnalyzeDocumentRiskOutput,
+    AnalyzeDocumentRiskInputSchema,
+    AnalyzeDocumentRiskOutputSchema,
+} from '@/lib/types';
 
-export const AnalyzeDocumentRiskInputSchema = z.object({
-  documentDataUri: z
-    .string()
-    .describe(
-      "A contract document, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
-    ),
-});
-export type AnalyzeDocumentRiskInput = z.infer<
-  typeof AnalyzeDocumentRiskInputSchema
->;
-
-const ClauseSchema = z.object({
-  title: z.string().describe('The title or heading of the clause.'),
-  text: z.string().describe('The full text of the clause.'),
-});
-
-export const AnalyzeDocumentRiskOutputSchema = z.object({
-  highRiskClauses: z
-    .array(ClauseSchema)
-    .describe('An array of clauses identified as high risk.'),
-  mediumRiskClauses: z
-    .array(ClauseSchema)
-    .describe('An array of clauses identified as medium risk.'),
-  lowRiskClauses: z
-    .array(ClauseSchema)
-    .describe('An array of clauses identified as low risk.'),
-});
-export type AnalyzeDocumentRiskOutput = z.infer<
-  typeof AnalyzeDocumentRiskOutputSchema
->;
 
 export async function analyzeDocumentRisk(
   input: AnalyzeDocumentRiskInput

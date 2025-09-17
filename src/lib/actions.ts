@@ -1,7 +1,7 @@
 'use server';
 
 import { z } from 'zod';
-import type { Summary, Explanation, RiskAnalysis, SuggestedRewrite } from './types';
+import type { Summary, Explanation, RiskAnalysis, SuggestedRewrite, AnalyzeDocumentRiskOutput } from './types';
 import {
   SummarizeClauseInput,
   summarizeClause,
@@ -23,8 +23,6 @@ import {
   answerContractQuestions,
 } from '@/ai/flows/answer-contract-questions';
 import {
-  AnalyzeDocumentRiskInput,
-  AnalyzeDocumentRiskOutput,
   analyzeDocumentRisk,
 } from '@/ai/flows/analyze-document-risk';
 import { contract } from '@/lib/data';

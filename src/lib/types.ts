@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 export type Entity = {
   name: string;
   type: 'Party' | 'Date' | 'Amount' | 'Obligation' | string;
@@ -33,3 +35,38 @@ export type Explanation = {
 export type SuggestedRewrite = {
   suggestedRewrite: string;
 };
+
+// --- Schemas for AI Flows ---
+
+export const AnalyzeDocumentRiskInputSchema = z.object({
+  documentDataUri: z
+    .string()
+    .describe(
+      "A contract document, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
+    ),
+});
+
+const ClauseSchema = z.object({
+  title: z.string().describe('The title or heading of the clause.'),
+  text: z.string().describe('The full text of the clause.'),
+});
+
+export const AnalyzeDocumentRiskOutputSchema = z.object({
+  highRiskClauses: z
+    .array(ClauseSchema)
+    .describe('An array of clauses identified as high risk.'),
+  mediumRiskClauses: z
+    .array(ClauseSchema)
+    .describe('An array of clauses identified as medium risk.'),
+  lowRiskClauses: z
+    .array(ClauseSchema)
+    .describe('An array of clauses identified as low risk.'),
+});
+
+// Export inferred types from schemas
+export type AnalyzeDocumentRiskInput = z.infer<
+  typeof AnalyzeDocumentRiskInputSchema
+>;
+export type AnalyzeDocumentRiskOutput = z.infer<
+  typeof AnalyzeDocumentRiskOutputSchema
+>;
