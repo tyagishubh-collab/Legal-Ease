@@ -4,9 +4,7 @@ import type { ReactNode } from 'react';
 export default function AppLayout({ children }: { children: ReactNode }) {
   return (
     <AppShell>
-      <div className="flex h-full">
-        {children}
-      </div>
+      {children}
     </AppShell>
   );
 }
