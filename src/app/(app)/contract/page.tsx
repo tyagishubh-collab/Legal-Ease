@@ -9,6 +9,7 @@ import { Dropzone } from '@/components/contract/dropzone';
 import { FileUploader } from '@/components/contract/file-uploader';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Accordion } from '@/components/ui/accordion';
 
 export default function ContractPage() {
   const [documentTitle, setDocumentTitle] = useState(contract.title);
@@ -56,11 +57,13 @@ export default function ContractPage() {
                         <CardDescription>Review each clause and its associated risk analysis below.</CardDescription>
                     </CardHeader>
                     <CardContent>
+                      <Accordion type="single" collapsible className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {clausesWithRisk.map((clause) => (
                               <ClauseCard key={clause.id} clause={clause} initialRiskAnalysis={clause.risk!} />
                             ))}
                         </div>
+                      </Accordion>
                     </CardContent>
                 </Card>
             </Dropzone>
