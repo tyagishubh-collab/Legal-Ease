@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import type { Clause, RiskAnalysis } from '@/lib/types';
 import { Dropzone } from '@/components/contract/dropzone';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -42,7 +41,7 @@ export default function ContractPage() {
 
   return (
     <>
-      <div className="p-4 sm:p-6 lg:p-8 space-y-8">
+      <div className="p-4 sm:p-6 lg:p-8 space-y-8 max-w-5xl mx-auto">
         <div className="text-center">
             <h1 className="text-3xl font-bold tracking-tight">{documentTitle}</h1>
             <p className="mt-2 text-muted-foreground">
