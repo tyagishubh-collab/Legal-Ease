@@ -96,7 +96,7 @@ export function ChatPanel() {
                     className={cn(
                       'max-w-2xl rounded-2xl px-5 py-3 shadow-sm',
                       {
-                        'bg-primary text-primary-foreground rounded-br-none': message.role === 'user',
+                        'bg-blue-600 dark:bg-blue-500 text-white rounded-br-none': message.role === 'user',
                         'bg-card border rounded-bl-none': message.role === 'assistant',
                       }
                     )}
