@@ -12,10 +12,9 @@ import {
 import AppNav from '@/components/layout/app-nav';
 import { Logo } from '@/components/layout/logo';
 import { Button } from '@/components/ui/button';
-import { LogOut, User, UploadCloud } from 'lucide-react';
+import { LogOut, User } from 'lucide-react';
 import { ThemeToggle } from '../ui/theme-toggle';
 import { Avatar, AvatarFallback } from '../ui/avatar';
-import { FileUploader } from '../contract/file-uploader';
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   
@@ -59,12 +58,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               {/* Optional: Add a search bar or other header content here */}
             </div>
             <div className="flex items-center gap-4">
-              <FileUploader onFileSelect={handleFileSelect}>
-                <Button>
-                  <UploadCloud className="mr-2 h-4 w-4" />
-                  Upload Document
-                </Button>
-              </FileUploader>
               <ThemeToggle />
               <Avatar className="h-9 w-9">
                 <AvatarFallback>
