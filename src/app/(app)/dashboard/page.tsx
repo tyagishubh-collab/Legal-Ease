@@ -6,16 +6,18 @@ import { DashboardPageClient } from '@/components/dashboard/dashboard-page-clien
 export default async function DashboardPage() {
   return (
     <div className="p-4 sm:p-6 lg:p-8">
-      <h1 className="font-headline text-3xl font-bold tracking-tight">
-        Contract Dashboard
-      </h1>
-      <p className="mt-1 text-muted-foreground">
-        An overview of your document&apos;s risk profile.
-      </p>
-      <div className="mt-8">
-        <Suspense fallback={<DashboardSkeleton />}>
-          <DashboardPageClient initialContract={initialContract} />
-        </Suspense>
+      <div className="p-4 sm:p-6 lg:p-8">
+        <h1 className="font-headline text-3xl font-bold tracking-tight">
+          Contract Dashboard
+        </h1>
+        <p className="mt-1 text-muted-foreground">
+          An overview of your document&apos;s risk profile.
+        </p>
+        <div className="mt-8">
+          <Suspense fallback={<DashboardSkeleton />}>
+            <DashboardPageClient initialContract={initialContract} />
+          </Suspense>
+        </div>
       </div>
     </div>
   );

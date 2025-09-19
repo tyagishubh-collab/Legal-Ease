@@ -50,7 +50,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           </SidebarFooter>
         </Sidebar>
         <SidebarInset>
-          <header className="flex h-14 shrink-0 items-center gap-4 border-b bg-background px-4 lg:h-[60px] lg:px-6">
+          <header className="flex h-14 shrink-0 items-center gap-4 border-b bg-background px-4 lg:px-6">
             <div className="hidden md:block">
               <SidebarTrigger />
             </div>
