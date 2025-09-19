@@ -40,28 +40,27 @@ export default function ContractPage() {
   }
 
   return (
-    <div className="space-y-8 py-8">
-        <div className="text-center px-4 md:px-6">
-            <h1 className="text-3xl font-bold tracking-tight">{documentTitle}</h1>
-            <p className="mt-2 text-muted-foreground">
-              {analysisResult 
-                ? 'Analysis complete. Review the clauses below.' 
-                : 'Upload a document to begin analysis.'
-              }
-            </p>
-        </div>
-        <div className="mt-8 px-4 md:px-6">
-          <Dropzone onFileSelect={handleFileSelect} />
-        </div>
+    <div className="flex flex-col h-full">
+      <div className="text-center px-4 md:px-6 py-8">
+          <h1 className="text-3xl font-bold tracking-tight">{documentTitle}</h1>
+          <p className="mt-2 text-muted-foreground">
+            {analysisResult 
+              ? 'Analysis complete. Review the clauses below.' 
+              : 'Upload a document to begin analysis.'
+            }
+          </p>
+      </div>
+      <div className="flex-grow overflow-auto px-4 md:px-6 space-y-8">
+        <Dropzone onFileSelect={handleFileSelect} />
         
-        <div className="mt-6 flex justify-center">
+        <div className="flex justify-center">
             <Button onClick={handleGenerate} disabled={!selectedFile || isPending}>
                 {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isPending ? 'Analyzing...' : 'Generate Analysis'}
             </Button>
         </div>
 
-        <div className="mt-8 space-y-8 px-4 md:px-6">
+        <div className="space-y-8">
           {error && (
               <Card className="bg-destructive/10 border-destructive text-center">
                   <CardHeader>
@@ -85,6 +84,7 @@ export default function ContractPage() {
 
           {analysisResult && <AnalysisResult result={analysisResult} />}
         </div>
+      </div>
     </div>
   );
 }
