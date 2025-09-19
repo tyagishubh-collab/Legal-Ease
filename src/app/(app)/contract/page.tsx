@@ -40,7 +40,7 @@ export default function ContractPage() {
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full w-full">
       <div className="text-center py-8 px-4 md:px-6">
           <h1 className="text-3xl font-bold tracking-tight">{documentTitle}</h1>
           <p className="mt-2 text-muted-foreground">
