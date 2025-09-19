@@ -5,7 +5,7 @@ import { DashboardPageClient } from '@/components/dashboard/dashboard-page-clien
 
 export default async function DashboardPage() {
   return (
-    <div className="p-4 sm:p-6 lg:p-8">
+    <div className="flex-1 w-full min-h-screen p-4 sm:p-6 lg:p-8 bg-background overflow-x-hidden">
       <h1 className="font-headline text-3xl font-bold tracking-tight">
         Contract Dashboard
       </h1>
@@ -31,9 +31,9 @@ function DashboardSkeleton() {
           <Skeleton className="h-64" />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <Skeleton className="h-24" />
-          <Skeleton className="h-24" />
-          <Skeleton className="h-24" />
+          <Skeleton className="h-70" />
+          <Skeleton className="h-70" />
+          <Skeleton className="h-70" />
         </div>
       </div>
     </div>
