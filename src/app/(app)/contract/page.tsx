@@ -6,7 +6,6 @@ import { Loader2, FileUp, Sparkles } from 'lucide-react';
 import type { AnalyzeDocumentRiskOutput } from '@/lib/types';
 import { AnalysisResult } from '@/components/contract/analysis-result';
 import { analyzeDocumentAction } from '@/lib/actions';
-import { Button } from '@/components/ui/button';
 import { Dropzone } from '@/components/contract/dropzone';
 
 export default function ContractPage() {
@@ -33,7 +32,7 @@ export default function ContractPage() {
   
   if (isPending) {
     return (
-        <div className="flex flex-col items-center justify-center h-full w-full">
+        <div className="flex flex-col items-center justify-center h-full w-full p-4 sm:p-6 lg:p-8">
             <Card className="max-w-md text-center">
                 <CardHeader>
                     <CardTitle>Analyzing Document</CardTitle>
@@ -53,19 +52,19 @@ export default function ContractPage() {
   if (analysisResult) {
     return (
         <div className="w-full min-h-screen flex flex-col bg-background">
-            <div className="p-4 sm:p-6 lg:p-8 border-b">
-                <h1 className="text-3xl font-bold tracking-tight">{selectedFile?.name}</h1>
-                <p className="mt-2 text-muted-foreground">
-                Analysis complete. Review the clauses below.
-                </p>
+          <div className="p-4 sm:p-6 lg:p-8 border-b">
+            <h1 className="text-3xl font-bold tracking-tight">{selectedFile?.name}</h1>
+            <p className="mt-2 text-muted-foreground">
+              Analysis complete. Review the clauses below.
+            </p>
+          </div>
+          <div className="flex-1 w-full p-4 sm:p-6 lg:p-8">
+            <div className="w-full max-w-4xl mx-auto">
+              <Card>
+                <AnalysisResult result={analysisResult} />
+              </Card>
             </div>
-            <div className="flex-1 w-full p-4 sm:p-6 lg:p-8">
-                <div className="w-full">
-                    <Card>
-                        <AnalysisResult result={analysisResult} />
-                    </Card>
-                </div>
-            </div>
+          </div>
         </div>
     )
   }
@@ -80,10 +79,12 @@ export default function ContractPage() {
               </p>
           </div>
         <Dropzone onFileSelect={setSelectedFile} selectedFile={selectedFile} onClear={() => setSelectedFile(null)} />
-        <Button onClick={handleAnalysis} disabled={!selectedFile} size="lg">
-          <Sparkles className="mr-2 h-4 w-4" />
-          Analyze Document
-        </Button>
+        <button onClick={handleAnalysis} disabled={!selectedFile || isPending} className="btn">
+          <svg height="24" width="24" fill="#FFFFFF" viewBox="0 0 24 24" data-name="Layer 1" id="Layer_1" className="sparkle">
+              <path d="M10,21.236,6.755,14.745.264,11.5,6.755,8.255,10,1.764l3.245,6.491L19.736,11.5l-6.491,3.245ZM18,21l1.5,3L21,21l3-1.5L21,18l-1.5-3L18,18l-3,1.5ZM19.333,4.667,20.5,7l1.167-2.333L24,3.5,21.667,2.333,20.5,0,19.333,2.333,17,3.5Z"></path>
+          </svg>
+          <span className="text">Generate</span>
+        </button>
       </div>
       {error && (
         <Card className="bg-destructive/10 border-destructive text-center mt-4">
