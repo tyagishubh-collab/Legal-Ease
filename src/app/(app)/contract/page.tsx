@@ -56,7 +56,7 @@ export default function ContractPage() {
         {/* Body */}
         <div className="flex-grow overflow-auto space-y-8 px-6">
           {!analysisResult && (
-            <div className="max-w-2xl mx-auto">
+            <div className="mx-auto w-full">
               <Card>
                 <CardContent className="p-6">
                   <Dropzone onFileSelect={handleFileSelect} />
