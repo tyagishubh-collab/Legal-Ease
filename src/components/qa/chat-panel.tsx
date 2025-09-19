@@ -80,13 +80,13 @@ export function ChatPanel() {
               <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
                 <Bot className="h-10 w-10 text-primary" />
               </div>
-              <h1 className="font-headline text-3xl font-bold tracking-tight">
-                Hello, how can I help?
+              <h1 className="font-headline text-2xl font-bold tracking-tight">
+                Contract Q&A
               </h1>
               <p className="mt-4 max-w-lg text-muted-foreground">
-                Ask me anything about your contract. You can start with questions like:
+                Ask anything about the document.
               </p>
-              <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
+              <div className="mt-6 w-full grid grid-cols-1 gap-3 text-left">
                   <div className="p-4 rounded-lg border bg-card hover:bg-muted/50 cursor-pointer" onClick={() => setInput('What are my key obligations?')}>
                       <h3 className="font-semibold text-sm">Key Obligations</h3>
                       <p className="text-xs text-muted-foreground mt-1">What are my key obligations under this agreement?</p>
@@ -150,7 +150,7 @@ export function ChatPanel() {
           )}
         </div>
       </ScrollArea>
-      <div className="w-full bg-background/95 px-4 py-3 sm:px-6 md:absolute md:bottom-4 md:left-1/2 md:w-full md:max-w-3xl md:-translate-x-1/2 md:bg-transparent md:p-0">
+      <div className="w-full bg-background/95 px-4 py-3 sm:px-6">
         {selectedFile && (
           <div className="mb-2 flex items-center justify-between rounded-full border bg-card p-2 pl-4 shadow-lg animate-fade-in-up">
             <div className="flex items-center gap-3">
