@@ -37,29 +37,34 @@ export type SuggestedRewrite = {
 };
 
 // --- Schemas for AI Flows ---
-
-export const AnalyzeDocumentRiskInputSchema = z.object({
-  documentDataUri: z
-    .string()
-    .describe(
-      "A contract document, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
-    ),
+const ClauseSchema = z.object({
+  id: z.string(),
+  title: z.string().describe('The title or heading of the clause.'),
+  text: z.string().describe('The full text of the clause.'),
+  entities: z.array(z.object({
+    name: z.string(),
+    type: z.string(),
+  })),
 });
 
-const ClauseSchema = z.object({
+export const AnalyzeDocumentRiskInputSchema = z.object({
+  clauses: z.array(ClauseSchema).describe('An array of contract clauses to analyze.'),
+});
+
+const AnalyzedClauseSchema = z.object({
   title: z.string().describe('The title or heading of the clause.'),
   text: z.string().describe('The full text of the clause.'),
 });
 
 export const AnalyzeDocumentRiskOutputSchema = z.object({
   highRiskClauses: z
-    .array(ClauseSchema)
+    .array(AnalyzedClauseSchema)
     .describe('An array of clauses identified as high risk.'),
   mediumRiskClauses: z
-    .array(ClauseSchema)
+    .array(AnalyzedClauseSchema)
     .describe('An array of clauses identified as medium risk.'),
   lowRiskClauses: z
-    .array(ClauseSchema)
+    .array(AnalyzedClauseSchema)
     .describe('An array of clauses identified as low risk.'),
 });
 
