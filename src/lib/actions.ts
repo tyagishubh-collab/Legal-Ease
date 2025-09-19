@@ -129,9 +129,32 @@ export async function analyzeDocumentAction(
 
   const { file } = validatedInput.data;
 
+  const apiUrl = process.env.LEGAL_EASE_API_URL;
+  const apiKey = process.env.LEGAL_EASE_API_KEY;
+
+  if (!apiUrl || !apiKey) {
+    throw new Error('API URL or API Key is not configured in environment variables.');
+  }
+
   const buffer = await file.arrayBuffer();
   const base64 = Buffer.from(buffer).toString('base64');
-  const documentDataUri = `data:${file.type};base64,${base64}`;
 
-  return await analyzeDocumentRisk({ documentDataUri });
+  const response = await fetch(apiUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      fileContent: base64,
+      mimeType: file.type,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+    throw new Error(`API request failed with status ${response.status}: ${errorBody}`);
+  }
+
+  return await response.json();
 }
