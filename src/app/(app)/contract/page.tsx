@@ -54,8 +54,12 @@ export default function ContractPage() {
         </div>
 
         {/* Body */}
-        <div className="flex-grow overflow-auto space-y-8 px-6 w-full">
-          <Dropzone onFileSelect={handleFileSelect} />
+        <div className="flex-grow overflow-auto space-y-8 px-6 w-full max-w-4xl mx-auto">
+          <Card>
+            <CardContent className="p-6">
+              <Dropzone onFileSelect={handleFileSelect} />
+            </CardContent>
+          </Card>
 
           <div className="flex justify-center">
             <Button onClick={handleGenerate} disabled={!selectedFile || isPending}>
