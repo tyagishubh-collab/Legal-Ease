@@ -30,8 +30,7 @@ export default function ContractPage() {
 
   return (
     <div className="w-full min-h-screen flex flex-col bg-background">
-      {/* Page header */}
-      <div className="w-full p-4 sm:p-6 lg:p-8 pb-8">
+      <div className="p-4 sm:p-6 lg:p-8">
         <h1 className="text-3xl font-bold tracking-tight">{initialContract.title}</h1>
         <p className="mt-2 text-muted-foreground">
           {analysisResult
@@ -40,8 +39,7 @@ export default function ContractPage() {
         </p>
       </div>
 
-      {/* Body */}
-      <div className="flex-1 flex flex-col w-full space-y-8 px-4 sm:px-6 lg:px-8 pb-8">
+      <div className="flex-1 flex flex-col w-full px-4 sm:px-6 lg:px-8 pb-8">
         <div className="space-y-8">
           {error && (
             <Card className="bg-destructive/10 border-destructive text-center">
