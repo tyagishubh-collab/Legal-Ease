@@ -37,18 +37,12 @@ export type SuggestedRewrite = {
 };
 
 // --- Schemas for AI Flows ---
-const ClauseSchema = z.object({
-  id: z.string(),
-  title: z.string().describe('The title or heading of the clause.'),
-  text: z.string().describe('The full text of the clause.'),
-  entities: z.array(z.object({
-    name: z.string(),
-    type: z.string(),
-  })),
-});
-
 export const AnalyzeDocumentRiskInputSchema = z.object({
-  clauses: z.array(ClauseSchema).describe('An array of contract clauses to analyze.'),
+  documentDataUri: z
+    .string()
+    .describe(
+      "The contract document to analyze, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
+    ),
 });
 
 const AnalyzedClauseSchema = z.object({

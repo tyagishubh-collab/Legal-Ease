@@ -4,6 +4,7 @@ import { useState, useCallback, useRef, type ReactNode } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { UploadCloud, File as FileIcon, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface FileUploaderProps {
   children: ReactNode;
@@ -19,20 +20,14 @@ const ALLOWED_MIME_TYPES = [
   'image/jpeg',
 ];
 
-export function FileUploader({ children, onFileSelect, className, showFile = false }: FileUploaderProps) {
+export function FileUploader({ children, onFileSelect, className }: FileUploaderProps) {
   const [isDragging, setIsDragging] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const { toast } = useToast();
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = useCallback((file: File) => {
     if (ALLOWED_MIME_TYPES.includes(file.type)) {
-      setSelectedFile(file);
       onFileSelect(file);
-      toast({
-        title: 'File Ready',
-        description: `"${file.name}" is ready for processing.`,
-      });
     } else {
       toast({
         variant: 'destructive',
@@ -79,11 +74,10 @@ export function FileUploader({ children, onFileSelect, className, showFile = fal
   };
 
   const triggerFileSelect = () => inputRef.current?.click();
-  const clearFile = () => setSelectedFile(null);
 
   return (
     <div
-      className={className}
+      className={cn("relative", className)}
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
       onDragOver={handleDragOver}
@@ -101,27 +95,10 @@ export function FileUploader({ children, onFileSelect, className, showFile = fal
       {children}
       
       {isDragging && (
-        <div className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-primary bg-background/80 backdrop-blur-sm">
-          <UploadCloud className="h-16 w-16 text-primary" />
-          <p className="text-lg font-semibold text-primary">Drop your document here</p>
+        <div className="pointer-events-none absolute inset-0 z-20 flex flex-col items-center justify-center gap-4 rounded-lg bg-background/80 backdrop-blur-sm transition-opacity duration-300 animate-in fade-in">
+          <UploadCloud className="h-16 w-16 text-primary animate-pulse" />
+          <p className="text-lg font-semibold text-primary">Drop document here</p>
           <p className="text-sm text-muted-foreground">Supports: PDF, DOCX, PNG, JPG</p>
-        </div>
-      )}
-
-      {showFile && selectedFile && (
-        <div className="mt-4 flex items-center justify-between rounded-lg border bg-muted/50 p-3">
-            <div className="flex items-center gap-3">
-                <FileIcon className="h-5 w-5 text-muted-foreground" />
-                <div>
-                    <p className="text-sm font-medium">{selectedFile.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                        {(selectedFile.size / 1024).toFixed(2)} KB
-                    </p>
-                </div>
-            </div>
-            <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); clearFile();}}>
-                <X className="h-4 w-4" />
-            </Button>
         </div>
       )}
     </div>

@@ -1,7 +1,7 @@
 'use server';
 
 import { z } from 'zod';
-import type { Summary, Explanation, RiskAnalysis, SuggestedRewrite } from './types';
+import type { Summary, Explanation, RiskAnalysis, SuggestedRewrite, AnalyzeDocumentRiskOutput } from './types';
 import {
   SummarizeClauseInput,
   summarizeClause,
@@ -22,6 +22,7 @@ import {
   AnswerContractQuestionsInput,
   answerContractQuestions,
 } from '@/ai/flows/answer-contract-questions';
+import { analyzeDocumentRisk } from '@/ai/flows/analyze-document-risk';
 import { contract } from '@/lib/data';
 
 
@@ -112,4 +113,25 @@ export async function analyzeClauseRiskAction(input: AnalyzeClauseRiskInput): Pr
   }
 
   return await analyzeClauseRisk(validatedInput.data);
+}
+
+const analyzeDocumentSchema = z.object({
+  file: z.instanceof(File),
+});
+
+export async function analyzeDocumentAction(
+  input: z.infer<typeof analyzeDocumentSchema>
+): Promise<AnalyzeDocumentRiskOutput> {
+  const validatedInput = analyzeDocumentSchema.safeParse(input);
+  if (!validatedInput.success) {
+    throw new Error('Invalid input for analyzeDocumentAction');
+  }
+
+  const { file } = validatedInput.data;
+
+  const buffer = await file.arrayBuffer();
+  const base64 = Buffer.from(buffer).toString('base64');
+  const documentDataUri = `data:${file.type};base64,${base64}`;
+
+  return await analyzeDocumentRisk({ documentDataUri });
 }
