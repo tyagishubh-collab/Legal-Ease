@@ -138,25 +138,23 @@ export function DashboardPageClient({
       : [];
 
   return (
-    <div>
-      <div className="mb-6 flex justify-end">
+    <div className='space-y-4'>
+      <div className="flex justify-end">
         <Button onClick={handleExport}><Download className="mr-2 h-4 w-4" /> Export as PDF</Button>
       </div>
-      <div className="grid grid-cols-1 gap-4 lg:gap-8">
-        <div className="lg:col-span-3">
-          <SafetyScore value={safetyScore} />
-        </div>
-        <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-8">
-          <RiskDistributionChart data={riskData} />
-          <MapChart />
-        </div>
-        <div className="lg:col-span-3">
-          <StatCards
-            riskCounts={riskCounts}
-            totalClauses={totalClauses}
-            onCardClick={handleStatCardClick}
-          />
-        </div>
+      <div>
+        <SafetyScore value={safetyScore} />
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-8">
+        <RiskDistributionChart data={riskData} />
+        <MapChart />
+      </div>
+      <div>
+        <StatCards
+          riskCounts={riskCounts}
+          totalClauses={totalClauses}
+          onCardClick={handleStatCardClick}
+        />
       </div>
       {drilldownState.isOpen && drilldownState.riskLevel && (
         <ClauseDrilldown
