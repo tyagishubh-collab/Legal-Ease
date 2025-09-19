@@ -33,39 +33,43 @@ export default function ContractPage() {
         <h1 className="text-3xl font-bold tracking-tight">{initialContract.title}</h1>
         <p className="mt-2 text-muted-foreground">
           {analysisResult
-            ? 'Analysis complete. Review the clauses and ask questions below.'
+            ? 'Analysis complete. Review the clauses below.'
             : 'Analyzing contract...'}
         </p>
       </div>
 
       <div className="flex-1 flex flex-col overflow-y-auto">
         <div className="flex-1 w-full p-4 sm:p-6 lg:p-8">
-          <div className="space-y-8">
-            {error && (
-              <Card className="bg-destructive/10 border-destructive text-center">
-                <CardHeader>
-                  <CardTitle className="text-destructive">Analysis Failed</CardTitle>
-                  <CardDescription className="text-destructive/80">{error}</CardDescription>
-                </CardHeader>
-              </Card>
-            )}
+          {error && (
+            <Card className="bg-destructive/10 border-destructive text-center">
+              <CardHeader>
+                <CardTitle className="text-destructive">Analysis Failed</CardTitle>
+                <CardDescription className="text-destructive/80">{error}</CardDescription>
+              </CardHeader>
+            </Card>
+          )}
 
-            {isPending && !analysisResult && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Analyzing Document</CardTitle>
-                  <CardDescription>
-                    AI is reviewing your document, please wait...
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="text-center p-6">
-                  <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
-                </CardContent>
-              </Card>
-            )}
+          {isPending && !analysisResult && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Analyzing Document</CardTitle>
+                <CardDescription>
+                  AI is reviewing your document, please wait...
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="text-center p-6">
+                <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
+              </CardContent>
+            </Card>
+          )}
 
-            {analysisResult && <AnalysisResult result={analysisResult} />}
-          </div>
+          {analysisResult && (
+             <Card className="h-full">
+              <CardContent className="p-0">
+                <AnalysisResult result={analysisResult} />
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </div>

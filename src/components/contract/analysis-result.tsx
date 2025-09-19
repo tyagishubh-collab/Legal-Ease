@@ -27,10 +27,10 @@ export function AnalysisResult({ result }: AnalysisResultProps) {
             <Accordion type="single" collapsible className="w-full">
                 {clauses.map((clause, index) => (
                     <AccordionItem key={`${riskLevel}-${index}`} value={`item-${index}`}>
-                        <AccordionTrigger>
+                        <AccordionTrigger className="px-6">
                             <span className="text-left font-semibold">{clause.title}</span>
                         </AccordionTrigger>
-                        <AccordionContent>
+                        <AccordionContent className="px-6">
                             <p className="text-muted-foreground">{clause.text}</p>
                         </AccordionContent>
                     </AccordionItem>
@@ -40,7 +40,7 @@ export function AnalysisResult({ result }: AnalysisResultProps) {
     }
     
     return (
-        <Card>
+        <div>
             <CardHeader>
                 <CardTitle>Clause-by-Clause Analysis</CardTitle>
                 <CardDescription>The AI has categorized the document's clauses by risk level.</CardDescription>
@@ -59,28 +59,16 @@ export function AnalysisResult({ result }: AnalysisResultProps) {
                         </TabsTrigger>
                     </TabsList>
                     <TabsContent value="high">
-                        <Card>
-                            <CardContent className="p-2 sm:p-4">
-                                {renderClauseList(highRiskClauses, 'High')}
-                            </CardContent>
-                        </Card>
+                        {renderClauseList(highRiskClauses, 'High')}
                     </TabsContent>
                     <TabsContent value="medium">
-                         <Card>
-                            <CardContent className="p-2 sm:p-4">
-                                {renderClauseList(mediumRiskClauses, 'Medium')}
-                            </CardContent>
-                        </Card>
+                        {renderClauseList(mediumRiskClauses, 'Medium')}
                     </TabsContent>
                     <TabsContent value="low">
-                         <Card>
-                            <CardContent className="p-2 sm:p-4">
-                                {renderClauseList(lowRiskClauses, 'Low')}
-                            </CardContent>
-                        </Card>
+                        {renderClauseList(lowRiskClauses, 'Low')}
                     </TabsContent>
                 </Tabs>
             </CardContent>
-        </Card>
+        </div>
     )
 }
