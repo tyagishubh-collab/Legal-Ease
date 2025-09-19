@@ -54,19 +54,22 @@ export default function ContractPage() {
         </div>
 
         {/* Body */}
-        <div className="flex-grow overflow-auto space-y-8 px-6 w-full mx-auto">
-          <Card>
-            <CardContent className="p-6">
-              <Dropzone onFileSelect={handleFileSelect} />
-            </CardContent>
-          </Card>
-
-          <div className="flex justify-center">
-            <Button onClick={handleGenerate} disabled={!selectedFile || isPending}>
-              {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isPending ? 'Analyzing...' : 'Generate Analysis'}
-            </Button>
-          </div>
+        <div className="flex-grow overflow-auto space-y-8 px-6">
+          {!analysisResult && (
+            <div className="max-w-2xl mx-auto">
+              <Card>
+                <CardContent className="p-6">
+                  <Dropzone onFileSelect={handleFileSelect} />
+                </CardContent>
+              </Card>
+              <div className="flex justify-center mt-8">
+                <Button onClick={handleGenerate} disabled={!selectedFile || isPending}>
+                  {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {isPending ? 'Analyzing...' : 'Generate Analysis'}
+                </Button>
+              </div>
+            </div>
+          )}
 
           <div className="space-y-8">
             {error && (
