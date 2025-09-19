@@ -40,9 +40,9 @@ export default function ContractPage() {
   };
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8">
+    <div className="w-full min-h-screen flex flex-col bg-background p-4 sm:p-6 lg:p-8">
       {/* Page header */}
-      <div className="w-full text-center pb-8">
+      <div className="w-full pb-8">
         <h1 className="text-3xl font-bold tracking-tight">{documentTitle}</h1>
         <p className="mt-2 text-muted-foreground">
           {analysisResult
@@ -52,15 +52,15 @@ export default function ContractPage() {
       </div>
 
       {/* Body */}
-      <div className="space-y-8">
+      <div className="flex-1 flex flex-col w-full space-y-8">
         {!analysisResult && (
-          <div className="mx-auto w-full max-w-2xl">
+          <div className="w-full">
             <Card>
               <CardContent className="p-6">
                 <Dropzone onFileSelect={handleFileSelect} />
               </CardContent>
             </Card>
-            <div className="flex justify-center mt-8">
+            <div className="flex justify-start mt-8">
               <Button onClick={handleGenerate} disabled={!selectedFile || isPending}>
                 {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isPending ? 'Analyzing...' : 'Generate Analysis'}

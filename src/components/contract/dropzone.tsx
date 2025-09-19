@@ -12,7 +12,7 @@ interface DropzoneProps {
 export function Dropzone({ onFileSelect }: DropzoneProps) {
   return (
     <FileUploader onFileSelect={onFileSelect} className="w-full">
-        <div className="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-lg cursor-pointer bg-card hover:bg-muted/50 transition-colors">
+        <div className="w-full h-64 border-2 border-dashed rounded-lg flex items-center justify-center cursor-pointer bg-card hover:bg-muted/50 transition-colors">
             <div className="flex flex-col items-center justify-center pt-5 pb-6">
                 <UploadCloud className="w-8 h-8 mb-4 text-muted-foreground" />
                 <p className="mb-2 text-sm text-muted-foreground">
