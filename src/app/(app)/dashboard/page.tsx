@@ -2,13 +2,18 @@ import { Suspense } from 'react';
 import { contract as initialContract } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DashboardPageClient } from '@/components/dashboard/dashboard-page-client';
+import { DashboardPageHeader } from '@/components/dashboard/dashboard-page-header';
 
 export default async function DashboardPage() {
+  // We can pass initial data to the client component
+  const clausesWithRisk = initialContract.clauses.map((clause) => {
+    const risk = initialContract.riskAnalyses.find((r) => r.clauseId === clause.id);
+    return { ...clause, risk: risk! };
+  });
+
   return (
     <div className="flex-1 w-full min-h-screen p-4 sm:p-6 lg:p-8 bg-background overflow-x-hidden">
-      <h1 className="font-headline text-3xl font-bold tracking-tight">
-        Contract Dashboard
-      </h1>
+      <DashboardPageHeader clauses={clausesWithRisk} />
       <p className="mt-1 text-muted-foreground">
         An overview of your document&apos;s risk profile.
       </p>
