@@ -25,9 +25,9 @@ const getCityCoordinatesFlow = ai.defineFlow(
     outputSchema: GetCityCoordinatesOutputSchema,
   },
   async ({ cityName }) => {
-    const apiKey = process.env.GOOGLE_PLACES_API_KEY;
+    const apiKey = process.env.GOOGLE_GEOCODING_API_KEY || process.env.GOOGLE_PLACES_API_KEY;
     if (!apiKey) {
-      console.error("GOOGLE_PLACES_API_KEY is not set.");
+      console.error("GOOGLE_GEOCODING_API_KEY or GOOGLE_PLACES_API_KEY is not set.");
       throw new Error("Server configuration error: Missing API key.");
     }
     
