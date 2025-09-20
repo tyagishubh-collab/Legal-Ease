@@ -43,11 +43,11 @@ export function StatCards({
   ] as const;
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+    <div className="flex flex-col sm:flex-row gap-4">
       {stats.map((stat) => (
         <Card
           key={stat.title}
-          className="cursor-pointer hover:bg-muted/50 transition-colors duration-300 hover:-translate-y-1 hover:shadow-lg"
+          className="cursor-pointer hover:bg-muted/50 transition-colors duration-300 hover:-translate-y-1 hover:shadow-lg flex-1"
           onClick={() => onCardClick(stat.level)}
         >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
