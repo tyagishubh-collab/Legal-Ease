@@ -9,24 +9,13 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
+import {
+    GetTopLawyersInput,
+    GetTopLawyersInputSchema,
+    GetTopLawyersOutput,
+    GetTopLawyersOutputSchema
+} from '@/lib/types';
 
-export const GetTopLawyersInputSchema = z.object({
-  lat: z.number().describe('The latitude of the user\'s location.'),
-  lng: z.number().describe('The longitude of the user\'s location.'),
-});
-export type GetTopLawyersInput = z.infer<typeof GetTopLawyersInputSchema>;
-
-const LawyerSchema = z.object({
-    name: z.string().describe("The lawyer's or firm's name."),
-    rating: z.number().describe('The lawyer\'s rating on Google (1-5).'),
-    address: z.string().describe('The full address of the lawyer\'s office.'),
-    placeId: z.string().describe('The Google Places ID for the location.'),
-});
-
-export const GetTopLawyersOutputSchema = z.object({
-  lawyers: z.array(LawyerSchema).describe('A list of top-rated lawyers found nearby.'),
-});
-export type GetTopLawyersOutput = z.infer<typeof GetTopLawyersOutputSchema>;
 
 // This is a placeholder for the actual Google Places API tool.
 // In a real implementation, this tool would make an HTTP request to the Places API.

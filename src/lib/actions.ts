@@ -1,7 +1,7 @@
 'use server';
 
 import { z } from 'zod';
-import type { Summary, Explanation, RiskAnalysis, SuggestedRewrite, AnalyzeDocumentRiskOutput, AnalyzeDocumentSafetyOutput, TopLawyer } from './types';
+import type { Summary, Explanation, RiskAnalysis, SuggestedRewrite, AnalyzeDocumentRiskOutput, AnalyzeDocumentSafetyOutput, TopLawyer, GetTopLawyersInput, GetApproxLocationOutput } from './types';
 import {
   SummarizeClauseInput,
   summarizeClause,
@@ -24,10 +24,11 @@ import {
 } from '@/ai/flows/answer-contract-questions';
 import { analyzeDocumentRisk } from '@/ai/flows/analyze-document-risk';
 import { analyzeDocumentSafety } from '@/ai/flows/analyze-document-safety';
-import { getTopLawyers, GetTopLawyersInput } from '@/ai/flows/get-top-lawyers';
-import { getApproxLocation, GetApproxLocationOutput } from '@/ai/flows/get-approx-location';
+import { getTopLawyers } from '@/ai/flows/get-top-lawyers';
+import { getApproxLocation } from '@/ai/flows/get-approx-location';
 import { contract } from '@/lib/data';
 import mammoth from 'mammoth';
+import { GetTopLawyersInputSchema } from './types';
 
 
 const summarizeSchema = z.object({
@@ -165,13 +166,8 @@ export async function analyzeDocumentAction(
   return { riskAnalysis, safetyAnalysis };
 }
 
-const getTopLawyersSchema = z.object({
-  lat: z.number(),
-  lng: z.number(),
-});
-
 export async function getTopLawyersAction(input: GetTopLawyersInput): Promise<{ lawyers: TopLawyer[] }> {
-    const validatedInput = getTopLawyersSchema.safeParse(input);
+    const validatedInput = GetTopLawyersInputSchema.safeParse(input);
     if (!validatedInput.success) {
         throw new Error('Invalid input for getTopLawyersAction');
     }

@@ -9,12 +9,8 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
+import { GetApproxLocationOutput, GetApproxLocationOutputSchema } from '@/lib/types';
 
-export const GetApproxLocationOutputSchema = z.object({
-  lat: z.number().describe('The estimated latitude.'),
-  lng: z.number().describe('The estimated longitude.'),
-});
-export type GetApproxLocationOutput = z.infer<typeof GetApproxLocationOutputSchema>;
 
 export async function getApproxLocation(): Promise<GetApproxLocationOutput> {
   return getApproxLocationFlow();

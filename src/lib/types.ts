@@ -36,12 +36,14 @@ export type SuggestedRewrite = {
   suggestedRewrite: string;
 };
 
-export type TopLawyer = {
-    name: string;
-    rating: number;
-    address: string;
-    placeId: string;
-};
+export const TopLawyerSchema = z.object({
+    name: z.string().describe("The lawyer's or firm's name."),
+    rating: z.number().describe('The lawyer\'s rating on Google (1-5).'),
+    address: z.string().describe('The full address of the lawyer\'s office.'),
+    placeId: z.string().describe('The Google Places ID for the location.'),
+});
+
+export type TopLawyer = z.infer<typeof TopLawyerSchema>;
 
 // --- Schemas for AI Flows ---
 export const AnalyzeDocumentRiskInputSchema = z.object({
@@ -92,6 +94,20 @@ export const AnalyzeDocumentSafetyInputSchema = z.object({
       .describe('A single, concise sentence summarizing the most critical risk.'),
   });
 
+export const GetTopLawyersInputSchema = z.object({
+  lat: z.number().describe("The latitude of the user's location."),
+  lng: z.number().describe("The longitude of the user's location."),
+});
+
+export const GetTopLawyersOutputSchema = z.object({
+  lawyers: z.array(TopLawyerSchema).describe('A list of top-rated lawyers found nearby.'),
+});
+
+export const GetApproxLocationOutputSchema = z.object({
+  lat: z.number().describe('The estimated latitude.'),
+  lng: z.number().describe('The estimated longitude.'),
+});
+
 // Export inferred types from schemas
 export type AnalyzeDocumentRiskInput = z.infer<
   typeof AnalyzeDocumentRiskInputSchema
@@ -105,3 +121,6 @@ export type AnalyzeDocumentSafetyInput = z.infer<
 export type AnalyzeDocumentSafetyOutput = z.infer<
   typeof AnalyzeDocumentSafetyOutputSchema
 >;
+export type GetTopLawyersInput = z.infer<typeof GetTopLawyersInputSchema>;
+export type GetTopLawyersOutput = z.infer<typeof GetTopLawyersOutputSchema>;
+export type GetApproxLocationOutput = z.infer<typeof GetApproxLocationOutputSchema>;
