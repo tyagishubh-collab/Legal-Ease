@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useTransition } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { getTopLawyersAction } from '@/lib/actions';
@@ -11,11 +11,11 @@ import { motion } from 'framer-motion';
 export function TopLawyers() {
   const [lawyers, setLawyers] = useState<TopLawyer[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if ('geolocation' in navigator) {
-      startTransition(() => {
+    const fetchLawyers = () => {
+      if ('geolocation' in navigator) {
         navigator.geolocation.getCurrentPosition(
           async (position) => {
             try {
@@ -25,20 +25,25 @@ export function TopLawyers() {
             } catch (e) {
               console.error(e);
               setError('Could not fetch lawyer data. Please try again later.');
+            } finally {
+              setIsLoading(false);
             }
           },
           (err) => {
             setError('Location access denied. Please enable location services to find nearby lawyers.');
+            setIsLoading(false);
           }
         );
-      });
-    } else {
-      setError('Geolocation is not supported by your browser.');
-    }
+      } else {
+        setError('Geolocation is not supported by your browser.');
+        setIsLoading(false);
+      }
+    };
+    fetchLawyers();
   }, []);
 
   const renderContent = () => {
-    if (isPending) {
+    if (isLoading) {
       return (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {[...Array(3)].map((_, i) => (
