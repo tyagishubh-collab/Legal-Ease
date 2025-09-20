@@ -7,61 +7,86 @@ import { getTopLawyersAction, getApproxLocationAction } from '@/lib/actions';
 import type { TopLawyer } from '@/lib/types';
 import { AlertCircle, Loader2, MapPin, Star, WifiOff, LocateFixed } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+
+type AlertState = {
+  isOpen: boolean;
+  title: string;
+  message: string;
+};
 
 export function TopLawyers() {
   const [lawyers, setLawyers] = useState<TopLawyer[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isFallback, setIsFallback] = useState(false);
+  const [alertState, setAlertState] = useState<AlertState>({ isOpen: false, title: '', message: '' });
 
   useEffect(() => {
     const fetchLocationAndLawyers = () => {
       setIsLoading(true);
       setError(null);
-      if ('geolocation' in navigator) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const { lat, lng } = { lat: position.coords.latitude, lng: position.coords.longitude };
-            fetchLawyers({ lat, lng });
-          },
-          () => {
-            // Permission denied or other error, try fallback
-            fetchApproxLocation();
-          },
-          { timeout: 5000 }
-        );
-      } else {
-        // Geolocation not supported, try fallback
+
+      if (!navigator.geolocation) {
+        showErrorAlert('Geolocation Not Supported', 'Your browser does not support geolocation. Trying to find your approximate location.');
         fetchApproxLocation();
+        return;
       }
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { lat, lng } = { lat: position.coords.latitude, lng: position.coords.longitude };
+          fetchLawyers({ lat, lng });
+        },
+        (geoError) => {
+          if (geoError.code === geoError.PERMISSION_DENIED) {
+            showErrorAlert('Location Access Denied', 'You have denied location access. To find nearby lawyers, please enable location permissions in your browser settings. In the meantime, we will try to find your approximate location.');
+          } else {
+             showErrorAlert('Location Error', `Could not determine your location (Error ${geoError.code}). Trying to find your approximate location.`);
+          }
+          fetchApproxLocation();
+        },
+        { timeout: 7000, maximumAge: 60000 }
+      );
     };
 
     const fetchApproxLocation = async () => {
-        setIsFallback(true);
-        try {
-            const { lat, lng } = await getApproxLocationAction();
-            fetchLawyers({ lat, lng });
-        } catch (e) {
-            console.error(e);
-            setError('Unable to determine location. Could not find nearby lawyers.');
-            setIsLoading(false);
-        }
+      setIsFallback(true);
+      try {
+        const { lat, lng } = await getApproxLocationAction();
+        fetchLawyers({ lat, lng });
+      } catch (e) {
+        console.error(e);
+        setError('Unable to determine your location. We could not find any lawyers for you at this time.');
+        setIsLoading(false);
+      }
     };
 
     const fetchLawyers = async ({ lat, lng }: { lat: number; lng: number }) => {
-        try {
-            const result = await getTopLawyersAction({ lat, lng });
-            setLawyers(result.lawyers);
-        } catch (e) {
-            console.error(e);
-            setError('Could not fetch lawyer data. Please try again later.');
-        } finally {
-            setIsLoading(false);
+      try {
+        const result = await getTopLawyersAction({ lat, lng });
+        if (result.lawyers.length === 0) {
+            setError("We couldn't find any lawyers in your immediate area. You may want to try searching a nearby city.");
         }
+        setLawyers(result.lawyers);
+      } catch (e) {
+        console.error(e);
+        setError('Could not fetch lawyer data. Please try again later.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    const showErrorAlert = (title: string, message: string) => {
+      setAlertState({ isOpen: true, title, message });
     };
 
     fetchLocationAndLawyers();
   }, []);
+
+  const closeAlert = () => {
+    setAlertState({ isOpen: false, title: '', message: '' });
+  };
 
   const renderContent = () => {
     if (isLoading) {
@@ -83,7 +108,7 @@ export function TopLawyers() {
       );
     }
 
-    if (error) {
+    if (error && lawyers.length === 0) {
       return (
         <div className="flex flex-col items-center justify-center text-center p-8 bg-muted/50 rounded-lg">
           <AlertCircle className="w-12 h-12 text-destructive/80 mb-4" />
@@ -92,16 +117,6 @@ export function TopLawyers() {
         </div>
       );
     }
-    
-    if (lawyers.length === 0) {
-        return (
-          <div className="flex flex-col items-center justify-center text-center p-8 bg-muted/50 rounded-lg">
-            <WifiOff className="w-12 h-12 text-muted-foreground/80 mb-4" />
-            <h3 className="text-lg font-semibold text-foreground">No Lawyers Found</h3>
-            <p className="text-muted-foreground text-sm max-w-sm">We couldn't find any lawyers in your immediate area. You may want to try searching a nearby city.</p>
-          </div>
-        );
-      }
 
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -146,6 +161,7 @@ export function TopLawyers() {
   };
 
   return (
+    <>
     <Card>
       <CardHeader>
         <CardTitle>Top Lawyers Near You</CardTitle>
@@ -163,5 +179,19 @@ export function TopLawyers() {
         {renderContent()}
       </CardContent>
     </Card>
+    <AlertDialog open={alertState.isOpen} onOpenChange={(open) => !open && closeAlert()}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{alertState.title}</AlertDialogTitle>
+          <AlertDialogDescription>
+            {alertState.message}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogAction onClick={closeAlert}>OK</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 }
