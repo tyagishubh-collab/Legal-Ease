@@ -43,7 +43,7 @@ export function StatCards({
   ] as const;
 
   return (
-    <div className="flex flex-col sm:flex-row gap-4">
+    <div className="flex flex-col gap-4">
       {stats.map((stat) => (
         <Card
           key={stat.title}
