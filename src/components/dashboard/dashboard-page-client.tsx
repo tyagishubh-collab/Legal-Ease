@@ -91,14 +91,14 @@ export function DashboardPageClient({
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-8">
         <RiskDistributionChart data={riskData} />
-        <MapChart />
-      </div>
-      <div>
         <StatCards
           riskCounts={riskCounts}
           totalClauses={totalClauses}
           onCardClick={handleStatCardClick}
         />
+      </div>
+      <div>
+        <MapChart />
       </div>
       {drilldownState.isOpen && drilldownState.riskLevel && (
         <ClauseDrilldown
