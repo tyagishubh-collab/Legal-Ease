@@ -2,6 +2,7 @@
 /**
  * @fileOverview A Genkit flow to get the approximate location of the user using the Google Geolocation API.
  * This is used as a fallback when browser-based geolocation is unavailable or denied.
+ * If the Google API fails, it returns a default location.
  *
  * Deployment Instructions:
  * 1. Set the Google Geolocation API Key in your environment.
@@ -41,7 +42,8 @@ const getApproxLocationFlow = ai.defineFlow(
     if (!apiKey) {
       const errorMsg = "Missing GOOGLE_GEOLOCATION_API_KEY or GOOGLE_PLACES_API_KEY environment variable.";
       console.error(errorMsg);
-      throw new Error(errorMsg);
+      // Even if API key is missing, return a default location to prevent frontend failure.
+      return { lat: 28.6139, lng: 77.2090 }; // Default to Delhi
     }
     
     const url = `https://www.googleapis.com/geolocation/v1/geolocate?key=${apiKey}`;
@@ -71,11 +73,12 @@ const getApproxLocationFlow = ai.defineFlow(
         });
         return validatedLocation;
       } else {
-        throw new Error("Failed to determine location from Geolocation API response.");
+        throw new Error("Geolocation API response did not contain a 'location' object.");
       }
     } catch (error) {
-      console.error("Failed to fetch from Google Geolocation API:", error);
-      throw new Error("Could not determine approximate location.");
+      console.error("Failed to fetch from Google Geolocation API, returning default location:", error);
+      // On any failure, return a default location.
+      return { lat: 28.6139, lng: 77.2090 }; // Default to Delhi
     }
   }
 );

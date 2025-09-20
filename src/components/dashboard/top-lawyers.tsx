@@ -28,7 +28,7 @@ export function TopLawyers() {
       setError(null);
 
       if (!navigator.geolocation) {
-        showErrorAlert('Geolocation Not Supported', 'Your browser does not support geolocation. Trying to find your approximate location.');
+        showErrorAlert('Geolocation Not Supported', 'Your browser does not support geolocation. We will try to find your approximate location.');
         fetchApproxLocation();
         return;
       }
@@ -40,9 +40,9 @@ export function TopLawyers() {
         },
         (geoError) => {
           if (geoError.code === geoError.PERMISSION_DENIED) {
-            showErrorAlert('Location Access Denied', 'You have denied location access. To find nearby lawyers, please enable location permissions in your browser settings. In the meantime, we will try to find your approximate location.');
+            showErrorAlert('Location Access Denied', 'You have denied location access. To find nearby lawyers, please enable it in your browser settings. We will now try to find your approximate location.');
           } else {
-             showErrorAlert('Location Error', `Could not determine your location (Error ${geoError.code}). Trying to find your approximate location.`);
+             showErrorAlert('Location Error', `Could not determine your location (Error ${geoError.code}). We will try to find your approximate location.`);
           }
           fetchApproxLocation();
         },
