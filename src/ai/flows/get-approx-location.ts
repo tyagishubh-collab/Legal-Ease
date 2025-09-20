@@ -13,7 +13,7 @@ import { GetApproxLocationOutput, GetApproxLocationOutputSchema } from '@/lib/ty
 
 
 export async function getApproxLocation(): Promise<GetApproxLocationOutput> {
-  return getApproxLocationFlow();
+  return getApproxLocationFlow(null);
 }
 
 const getApproxLocationFlow = ai.defineFlow(
