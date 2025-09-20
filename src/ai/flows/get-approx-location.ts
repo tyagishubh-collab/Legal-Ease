@@ -3,6 +3,18 @@
  * @fileOverview A Genkit flow to get the approximate location of the user using the Google Geolocation API.
  * This is used as a fallback when browser-based geolocation is unavailable or denied.
  *
+ * Deployment Instructions:
+ * 1. Set the Google Geolocation API Key in your environment.
+ *    For Firebase, use the CLI:
+ *    firebase functions:config:set google.geolocation_api_key="YOUR_KEY"
+ *    (Or set GOOGLE_GEOLOCATION_API_KEY in your .env file for local development)
+ *
+ * 2. Deploy your functions/flows.
+ *    firebase deploy --only functions
+ *
+ * Frontend Usage:
+ * When navigator.geolocation.getCurrentPosition() fails, call the 'getApproxLocationAction' server action.
+ *
  * - getApproxLocation - A function that fetches the approximate location.
  * - GetApproxLocationOutput - The return type for the getApproxLocation function.
  */
@@ -23,10 +35,13 @@ const getApproxLocationFlow = ai.defineFlow(
     outputSchema: GetApproxLocationOutputSchema,
   },
   async () => {
+    // Use the specific Geolocation key first, fallback to the generic Places key.
     const apiKey = process.env.GOOGLE_GEOLOCATION_API_KEY || process.env.GOOGLE_PLACES_API_KEY;
+    
     if (!apiKey) {
-      console.error("GOOGLE_GEOLOCATION_API_KEY or GOOGLE_PLACES_API_KEY is not set.");
-      throw new Error("Server configuration error: API key is missing.");
+      const errorMsg = "Missing GOOGLE_GEOLOCATION_API_KEY or GOOGLE_PLACES_API_KEY environment variable.";
+      console.error(errorMsg);
+      throw new Error(errorMsg);
     }
     
     const url = `https://www.googleapis.com/geolocation/v1/geolocate?key=${apiKey}`;
@@ -37,21 +52,24 @@ const getApproxLocationFlow = ai.defineFlow(
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({}),
+        body: JSON.stringify({ considerIp: true }),
       });
+      
+      const responseData = await response.json();
+      console.log("Google Geolocation API Raw Response:", JSON.stringify(responseData, null, 2));
 
       if (!response.ok) {
-        const errorBody = await response.text();
+        const errorBody = JSON.stringify(responseData);
         throw new Error(`Google Geolocation API request failed with status ${response.status}: ${errorBody}`);
       }
 
-      const data = await response.json();
-      
-      if (data.location) {
-        return {
-          lat: data.location.lat,
-          lng: data.location.lng,
-        };
+      if (responseData.location) {
+        // Validate the output with Zod before returning.
+        const validatedLocation = GetApproxLocationOutputSchema.parse({
+            lat: responseData.location.lat,
+            lng: responseData.location.lng,
+        });
+        return validatedLocation;
       } else {
         throw new Error("Failed to determine location from Geolocation API response.");
       }
