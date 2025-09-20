@@ -13,9 +13,9 @@ export function MapChart() {
   return (
     <Card className="h-full">
       <CardHeader>
-        <CardTitle>Map</CardTitle>
+        <CardTitle>Connect with nearby advisors</CardTitle>
         <CardDescription>
-          Geographic distribution of contract jurisdictions.
+          Find legal advisors in your area.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex items-center justify-center h-[210px]">
