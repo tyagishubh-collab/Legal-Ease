@@ -24,30 +24,30 @@ export function SafetyScore({ value }: SafetyScoreProps) {
   }, [value]);
 
   const getStatus = (score: number) => {
-    if (score >= 80) {
+    if (score < 25) {
       return {
-        label: 'Safe 🔒',
-        badgeVariant: 'default',
-        textColor: 'text-green-500',
-        badgeClass: 'bg-green-500/20 text-green-700 dark:bg-green-500/30 dark:text-green-300'
+        label: 'High risk',
+        badgeVariant: 'destructive',
+        textColor: 'text-red-500',
+        badgeClass: 'bg-red-500/20 text-red-700 dark:bg-red-500/30 dark:text-red-300'
       };
     }
-    if (score >= 60) {
+    if (score < 70) {
       return {
-        label: 'Review ⚠️',
+        label: 'Moderate risk',
         badgeVariant: 'secondary',
-        textColor: 'text-amber-500',
-        badgeClass: 'bg-amber-500/20 text-amber-700 dark:bg-amber-500/30 dark:text-amber-300'
+        textColor: 'text-yellow-500',
+        badgeClass: 'bg-yellow-500/20 text-yellow-700 dark:bg-yellow-500/30 dark:text-yellow-300'
       };
     }
     return {
-      label: 'High Risk 🚨',
-      badgeVariant: 'destructive',
-      textColor: 'text-red-500',
-      badgeClass: 'bg-red-500/20 text-red-700 dark:bg-red-500/30 dark:text-red-300'
+      label: 'Low risk',
+      badgeVariant: 'default',
+      textColor: 'text-green-500',
+      badgeClass: 'bg-green-500/20 text-green-700 dark:bg-green-500/30 dark:text-green-300'
     };
   };
-
+  
   const status = getStatus(value);
 
   return (

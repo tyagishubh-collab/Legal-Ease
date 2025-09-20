@@ -66,7 +66,9 @@ export default function ContractPage() {
           </div>
           <div className="flex-1 w-full p-4 sm:p-6 lg:p-8">
             <div className="w-full max-w-4xl mx-auto space-y-8">
-              <SafetySummary result={analysisResult.safetyAnalysis} />
+              <Card>
+                <SafetySummary result={analysisResult.safetyAnalysis} />
+              </Card>
               <Card>
                 <AnalysisResult result={analysisResult.riskAnalysis} />
               </Card>
