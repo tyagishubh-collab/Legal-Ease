@@ -25,6 +25,7 @@ import {
 import { analyzeDocumentRisk } from '@/ai/flows/analyze-document-risk';
 import { analyzeDocumentSafety } from '@/ai/flows/analyze-document-safety';
 import { getTopLawyers, GetTopLawyersInput } from '@/ai/flows/get-top-lawyers';
+import { getApproxLocation, GetApproxLocationOutput } from '@/ai/flows/get-approx-location';
 import { contract } from '@/lib/data';
 import mammoth from 'mammoth';
 
@@ -176,4 +177,8 @@ export async function getTopLawyersAction(input: GetTopLawyersInput): Promise<{ 
     }
     const result = await getTopLawyers(validatedInput.data);
     return { lawyers: result.lawyers };
+}
+
+export async function getApproxLocationAction(): Promise<GetApproxLocationOutput> {
+    return await getApproxLocation();
 }

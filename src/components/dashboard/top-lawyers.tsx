@@ -3,43 +3,64 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { getTopLawyersAction } from '@/lib/actions';
+import { getTopLawyersAction, getApproxLocationAction } from '@/lib/actions';
 import type { TopLawyer } from '@/lib/types';
-import { AlertCircle, Loader2, MapPin, Star, WifiOff } from 'lucide-react';
+import { AlertCircle, Loader2, MapPin, Star, WifiOff, LocateFixed } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export function TopLawyers() {
   const [lawyers, setLawyers] = useState<TopLawyer[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isFallback, setIsFallback] = useState(false);
 
   useEffect(() => {
-    const fetchLawyers = () => {
+    const fetchLocationAndLawyers = () => {
+      setIsLoading(true);
+      setError(null);
       if ('geolocation' in navigator) {
         navigator.geolocation.getCurrentPosition(
-          async (position) => {
-            try {
-              const { lat, lng } = { lat: position.coords.latitude, lng: position.coords.longitude };
-              const result = await getTopLawyersAction({ lat, lng });
-              setLawyers(result.lawyers);
-            } catch (e) {
-              console.error(e);
-              setError('Could not fetch lawyer data. Please try again later.');
-            } finally {
-              setIsLoading(false);
-            }
+          (position) => {
+            const { lat, lng } = { lat: position.coords.latitude, lng: position.coords.longitude };
+            fetchLawyers({ lat, lng });
           },
-          (err) => {
-            setError('Location access denied. Please enable location services to find nearby lawyers.');
-            setIsLoading(false);
-          }
+          () => {
+            // Permission denied or other error, try fallback
+            fetchApproxLocation();
+          },
+          { timeout: 5000 }
         );
       } else {
-        setError('Geolocation is not supported by your browser.');
-        setIsLoading(false);
+        // Geolocation not supported, try fallback
+        fetchApproxLocation();
       }
     };
-    fetchLawyers();
+
+    const fetchApproxLocation = async () => {
+        setIsFallback(true);
+        try {
+            const { lat, lng } = await getApproxLocationAction();
+            fetchLawyers({ lat, lng });
+        } catch (e) {
+            console.error(e);
+            setError('Unable to determine location. Could not find nearby lawyers.');
+            setIsLoading(false);
+        }
+    };
+
+    const fetchLawyers = async ({ lat, lng }: { lat: number; lng: number }) => {
+        try {
+            const result = await getTopLawyersAction({ lat, lng });
+            setLawyers(result.lawyers);
+        } catch (e) {
+            console.error(e);
+            setError('Could not fetch lawyer data. Please try again later.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    fetchLocationAndLawyers();
   }, []);
 
   const renderContent = () => {
@@ -128,8 +149,14 @@ export function TopLawyers() {
     <Card>
       <CardHeader>
         <CardTitle>Top Lawyers Near You</CardTitle>
-        <CardDescription>
-          Find highly-rated legal advisors in your area based on your current location.
+        <CardDescription className="flex items-center gap-2">
+            Find highly-rated legal advisors in your area.
+            {isFallback && !isLoading && !error && (
+                <span className="text-xs text-muted-foreground flex items-center gap-1.5 p-1 bg-muted rounded-md">
+                    <LocateFixed className="w-3 h-3" />
+                    Using approximate location
+                </span>
+            )}
         </CardDescription>
       </CardHeader>
       <CardContent>

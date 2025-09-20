@@ -1,3 +1,4 @@
+'use server';
 import '@/ai/flows/summarize-clauses.ts';
 import '@/ai/flows/explain-clauses-for-roles.ts';
 import '@/ai/flows/answer-contract-questions.ts';
@@ -6,3 +7,4 @@ import '@/ai/flows/suggest-clause-rewrite.ts';
 import '@/ai/flows/analyze-document-risk.ts';
 import '@/ai/flows/analyze-document-safety.ts';
 import '@/ai/flows/get-top-lawyers.ts';
+import '@/ai/flows/get-approx-location.ts';
