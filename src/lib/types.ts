@@ -40,7 +40,7 @@ export const TopLawyerSchema = z.object({
     name: z.string().describe("The lawyer's or firm's name."),
     rating: z.number().describe('The lawyer\'s rating on Google (1-5).'),
     address: z.string().describe('The full address of the lawyer\'s office.'),
-    placeId: z.string().describe('The Google Places ID for the location.'),
+    placeId: z.string().describe('The Google Place ID for the location.'),
 });
 
 export type TopLawyer = z.infer<typeof TopLawyerSchema>;
@@ -95,29 +95,11 @@ export const AnalyzeDocumentSafetyInputSchema = z.object({
   });
 
 export const GetTopLawyersInputSchema = z.object({
-  lat: z.number().describe("The latitude of the user's location."),
-  lng: z.number().describe("The longitude of the user's location."),
+  cityName: z.string().describe("The name of the city to search for lawyers in."),
 });
 
 export const GetTopLawyersOutputSchema = z.object({
   lawyers: z.array(TopLawyerSchema).describe('A list of top-rated lawyers found nearby.'),
-});
-
-export const GetCityCoordinatesInputSchema = z.object({
-    cityName: z.string().describe("The name of the city to geocode."),
-});
-
-export const GetCityCoordinatesOutputSchema = z.object({
-    lat: z.number().describe('The latitude of the city.'),
-    lng: z.number().describe('The longitude of the city.'),
-});
-
-export const GetTopLawyersFallbackInputSchema = z.object({
-  cityName: z.string().describe('The name of the city for the fallback search.'),
-});
-
-export const GetTopLawyersFallbackOutputSchema = z.object({
-  lawyers: z.array(TopLawyerSchema).describe('A list of lawyers found by the generative model.'),
 });
 
 
@@ -136,7 +118,3 @@ export type AnalyzeDocumentSafetyOutput = z.infer<
 >;
 export type GetTopLawyersInput = z.infer<typeof GetTopLawyersInputSchema>;
 export type GetTopLawyersOutput = z.infer<typeof GetTopLawyersOutputSchema>;
-export type GetCityCoordinatesInput = z.infer<typeof GetCityCoordinatesInputSchema>;
-export type GetCityCoordinatesOutput = z.infer<typeof GetCityCoordinatesOutputSchema>;
-export type GetTopLawyersFallbackInput = z.infer<typeof GetTopLawyersFallbackInputSchema>;
-export type GetTopLawyersFallbackOutput = z.infer<typeof GetTopLawyersFallbackOutputSchema>;

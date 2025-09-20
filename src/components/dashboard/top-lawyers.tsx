@@ -4,7 +4,7 @@ import { useState, FormEvent } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { getTopLawyersAction, getCityCoordinatesAction, getTopLawyersFallbackAction } from '@/lib/actions';
+import { getTopLawyersAction } from '@/lib/actions';
 import type { TopLawyer } from '@/lib/types';
 import { AlertCircle, Loader2, MapPin, Star, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -29,17 +29,7 @@ export function TopLawyers() {
     setSearchedCity(city);
 
     try {
-      // 1. Get coordinates for the city
-      const { lat, lng } = await getCityCoordinatesAction({ cityName: city });
-      
-      // 2. Try fetching lawyers with Google Places API
-      let fetchedLawyers = (await getTopLawyersAction({ lat, lng })).lawyers;
-      
-      // 3. If Places API returns no results, use Gemini fallback
-      if (!fetchedLawyers || fetchedLawyers.length === 0) {
-        console.log(`Places API returned no results for ${city}. Trying Gemini fallback.`);
-        fetchedLawyers = (await getTopLawyersFallbackAction({ cityName: city })).lawyers;
-      }
+      const { lawyers: fetchedLawyers } = await getTopLawyersAction({ cityName: city });
       
       if (!fetchedLawyers || fetchedLawyers.length === 0) {
         setError(`No lawyers were found in or around "${city}". Please try a different city.`);
@@ -48,7 +38,7 @@ export function TopLawyers() {
       }
 
     } catch (err) {
-      const errorMessage = (err as Error).message || `Could not find coordinates for "${city}". Please check the spelling or try a different city.`;
+      const errorMessage = (err as Error).message || `An unexpected error occurred while searching for lawyers in "${city}".`;
       setError(errorMessage);
     } finally {
       setIsLoading(false);

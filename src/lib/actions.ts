@@ -1,7 +1,7 @@
 'use server';
 
 import { z } from 'zod';
-import type { Summary, Explanation, RiskAnalysis, SuggestedRewrite, AnalyzeDocumentRiskOutput, AnalyzeDocumentSafetyOutput, TopLawyer, GetTopLawyersInput, GetCityCoordinatesInput, GetCityCoordinatesOutput, GetTopLawyersFallbackInput, GetTopLawyersFallbackOutput } from './types';
+import type { Summary, Explanation, RiskAnalysis, SuggestedRewrite, AnalyzeDocumentRiskOutput, AnalyzeDocumentSafetyOutput, TopLawyer, GetTopLawyersInput } from './types';
 import {
   SummarizeClauseInput,
   summarizeClause,
@@ -24,12 +24,10 @@ import {
 } from '@/ai/flows/answer-contract-questions';
 import { analyzeDocumentRisk } from '@/ai/flows/analyze-document-risk';
 import { analyzeDocumentSafety } from '@/ai/flows/analyze-document-safety';
-import { getTopLawyers } from '@/ai/flows/get-top-lawyers';
-import { getCityCoordinates } from '@/ai/flows/get-city-coordinates';
-import { getTopLawyersFallback } from '@/ai/flows/get-top-lawyers-fallback-gemini';
+import { getTopLawyers } from '@/ai/flows/get-top-lawyers-gemini';
 import { contract } from '@/lib/data';
 import mammoth from 'mammoth';
-import { GetCityCoordinatesInputSchema, GetTopLawyersFallbackInputSchema, GetTopLawyersInputSchema } from './types';
+import { GetTopLawyersInputSchema } from './types';
 
 
 const summarizeSchema = z.object({
@@ -174,20 +172,4 @@ export async function getTopLawyersAction(input: GetTopLawyersInput): Promise<{ 
     }
     const result = await getTopLawyers(validatedInput.data);
     return { lawyers: result.lawyers };
-}
-
-export async function getCityCoordinatesAction(input: GetCityCoordinatesInput): Promise<GetCityCoordinatesOutput> {
-    const validatedInput = GetCityCoordinatesInputSchema.safeParse(input);
-    if (!validatedInput.success) {
-        throw new Error('Invalid input for getCityCoordinatesAction');
-    }
-    return await getCityCoordinates(validatedInput.data);
-}
-
-export async function getTopLawyersFallbackAction(input: GetTopLawyersFallbackInput): Promise<GetTopLawyersFallbackOutput> {
-    const validatedInput = GetTopLawyersFallbackInputSchema.safeParse(input);
-    if (!validatedInput.success) {
-        throw new Error('Invalid input for getTopLawyersFallbackAction');
-    }
-    return await getTopLawyersFallback(validatedInput.data);
 }
