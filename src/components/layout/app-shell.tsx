@@ -26,7 +26,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen">
+      <div className="flex min-h-screen w-full">
         <Sidebar>
           <SidebarHeader className="border-b">
             <div className="flex h-14 items-center gap-4 px-3.5">
@@ -48,7 +48,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           </SidebarFooter>
         </Sidebar>
         <SidebarInset>
-          <header className="flex h-14 shrink-0 items-center gap-4 border-b bg-background">
+          <header className="flex h-14 shrink-0 items-center gap-4 border-b bg-background px-4">
             <SidebarTrigger className="hidden md:flex" />
             <div className="flex-1">
               {/* Optional: Add a search bar or other header content here */}
@@ -62,7 +62,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               </Avatar>
             </div>
           </header>
-          <main className="flex-1">{children}</main>
+          <main className="flex-1 overflow-auto">{children}</main>
         </SidebarInset>
       </div>
     </SidebarProvider>

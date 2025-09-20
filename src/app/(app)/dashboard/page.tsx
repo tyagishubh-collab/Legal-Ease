@@ -31,9 +31,9 @@ function DashboardSkeleton() {
           <Skeleton className="h-64" />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <Skeleton className="h-70" />
-          <Skeleton className="h-70" />
-          <Skeleton className="h-70" />
+          <Skeleton className="h-100" />
+          <Skeleton className="h-100" />
+          <Skeleton className="h-100" />
         </div>
       </div>
     </div>
