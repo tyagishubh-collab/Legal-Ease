@@ -17,7 +17,6 @@
  * When navigator.geolocation.getCurrentPosition() fails, call the 'getApproxLocationAction' server action.
  *
  * - getApproxLocation - A function that fetches the approximate location.
- * - GetApproxLocationOutput - The return type for the getApproxLocation function.
  */
 
 import { ai } from '@/ai/genkit';

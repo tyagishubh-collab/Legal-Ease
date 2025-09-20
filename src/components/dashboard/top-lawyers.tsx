@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { getTopLawyersAction, getApproxLocationAction } from '@/lib/actions';
 import type { TopLawyer } from '@/lib/types';
-import { AlertCircle, Loader2, MapPin, Star, WifiOff, LocateFixed } from 'lucide-react';
+import { AlertCircle, Loader2, MapPin, Star, LocateFixed } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 
@@ -26,6 +26,7 @@ export function TopLawyers() {
     const fetchLocationAndLawyers = () => {
       setIsLoading(true);
       setError(null);
+      setIsFallback(false);
 
       if (!navigator.geolocation) {
         showErrorAlert('Geolocation Not Supported', 'Your browser does not support geolocation. We will try to find your approximate location.');
@@ -170,7 +171,7 @@ export function TopLawyers() {
             {isFallback && !isLoading && !error && (
                 <span className="text-xs text-muted-foreground flex items-center gap-1.5 p-1 bg-muted rounded-md">
                     <LocateFixed className="w-3 h-3" />
-                    Using approximate location
+                    Using approximate location. Results may be less precise.
                 </span>
             )}
         </CardDescription>

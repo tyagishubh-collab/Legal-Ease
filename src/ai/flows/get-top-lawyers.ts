@@ -3,8 +3,6 @@
  * @fileOverview A Genkit flow to find top-rated lawyers near a given location using the Google Places API.
  *
  * - getTopLawyers - A function that fetches nearby lawyers.
- * - GetTopLawyersInput - The input type for the getTopLawyers function.
- * - GetTopLawyersOutput - The return type for the getTopLawyers function.
  */
 
 import { ai } from '@/ai/genkit';
@@ -46,11 +44,12 @@ const findNearbyLawyersTool = ai.defineTool(
 
         try {
             const response = await fetch(url);
-            if (!response.ok) {
-                const errorBody = await response.text();
-                throw new Error(`Google Places API request failed with status ${response.status}: ${errorBody}`);
-            }
             const data = await response.json();
+             console.log("Google Places API Raw Response:", JSON.stringify(data, null, 2));
+
+            if (!response.ok) {
+                throw new Error(`Google Places API request failed with status ${response.status}: ${JSON.stringify(data)}`);
+            }
             return data;
         } catch (error) {
             console.error("Failed to fetch from Google Places API:", error);
