@@ -8,3 +8,4 @@ import '@/ai/flows/analyze-document-risk.ts';
 import '@/ai/flows/analyze-document-safety.ts';
 import '@/ai/flows/get-top-lawyers.ts';
 import '@/ai/flows/get-approx-location.ts';
+import '@/ai/flows/get-city-coordinates.ts';

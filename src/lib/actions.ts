@@ -1,7 +1,7 @@
 'use server';
 
 import { z } from 'zod';
-import type { Summary, Explanation, RiskAnalysis, SuggestedRewrite, AnalyzeDocumentRiskOutput, AnalyzeDocumentSafetyOutput, TopLawyer, GetTopLawyersInput, GetApproxLocationOutput } from './types';
+import type { Summary, Explanation, RiskAnalysis, SuggestedRewrite, AnalyzeDocumentRiskOutput, AnalyzeDocumentSafetyOutput, TopLawyer, GetTopLawyersInput, GetApproxLocationOutput, GetCityCoordinatesInput } from './types';
 import {
   SummarizeClauseInput,
   summarizeClause,
@@ -26,9 +26,10 @@ import { analyzeDocumentRisk } from '@/ai/flows/analyze-document-risk';
 import { analyzeDocumentSafety } from '@/ai/flows/analyze-document-safety';
 import { getTopLawyers } from '@/ai/flows/get-top-lawyers';
 import { getApproxLocation } from '@/ai/flows/get-approx-location';
+import { getCityCoordinates } from '@/ai/flows/get-city-coordinates';
 import { contract } from '@/lib/data';
 import mammoth from 'mammoth';
-import { GetTopLawyersInputSchema } from './types';
+import { GetCityCoordinatesInputSchema, GetTopLawyersInputSchema } from './types';
 
 
 const summarizeSchema = z.object({
@@ -177,4 +178,12 @@ export async function getTopLawyersAction(input: GetTopLawyersInput): Promise<{ 
 
 export async function getApproxLocationAction(): Promise<GetApproxLocationOutput> {
     return await getApproxLocation();
+}
+
+export async function getCityCoordinatesAction(input: GetCityCoordinatesInput): Promise<{ lat: number, lng: number }> {
+    const validatedInput = GetCityCoordinatesInputSchema.safeParse(input);
+    if (!validatedInput.success) {
+        throw new Error('Invalid input for getCityCoordinatesAction');
+    }
+    return await getCityCoordinates(validatedInput.data);
 }

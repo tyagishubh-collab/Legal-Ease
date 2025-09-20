@@ -108,6 +108,15 @@ export const GetApproxLocationOutputSchema = z.object({
   lng: z.number().describe('The estimated longitude.'),
 });
 
+export const GetCityCoordinatesInputSchema = z.object({
+    cityName: z.string().describe("The name of the city to geocode."),
+});
+
+export const GetCityCoordinatesOutputSchema = z.object({
+    lat: z.number().describe('The latitude of the city.'),
+    lng: z.number().describe('The longitude of the city.'),
+});
+
 // Export inferred types from schemas
 export type AnalyzeDocumentRiskInput = z.infer<
   typeof AnalyzeDocumentRiskInputSchema
@@ -124,3 +133,5 @@ export type AnalyzeDocumentSafetyOutput = z.infer<
 export type GetTopLawyersInput = z.infer<typeof GetTopLawyersInputSchema>;
 export type GetTopLawyersOutput = z.infer<typeof GetTopLawyersOutputSchema>;
 export type GetApproxLocationOutput = z.infer<typeof GetApproxLocationOutputSchema>;
+export type GetCityCoordinatesInput = z.infer<typeof GetCityCoordinatesInputSchema>;
+export type GetCityCoordinatesOutput = z.infer<typeof GetCityCoordinatesOutputSchema>;
