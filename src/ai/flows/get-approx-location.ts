@@ -27,9 +27,9 @@ const getApproxLocationFlow = ai.defineFlow(
     outputSchema: GetApproxLocationOutputSchema,
   },
   async () => {
-    const apiKey = process.env.GOOGLE_PLACES_API_KEY;
+    const apiKey = process.env.GOOGLE_GEOLOCATION_API_KEY || process.env.GOOGLE_PLACES_API_KEY;
     if (!apiKey) {
-      console.error("GOOGLE_PLACES_API_KEY is not set.");
+      console.error("GOOGLE_GEOLOCATION_API_KEY or GOOGLE_PLACES_API_KEY is not set.");
       throw new Error("Server configuration error: API key is missing.");
     }
     
