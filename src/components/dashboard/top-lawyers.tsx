@@ -8,20 +8,12 @@ import { getTopLawyersAction, getApproxLocationAction, getCityCoordinatesAction 
 import type { TopLawyer } from '@/lib/types';
 import { AlertCircle, Loader2, MapPin, Star, LocateFixed, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-
-type AlertState = {
-  isOpen: boolean;
-  title: string;
-  message: string;
-};
 
 export function TopLawyers() {
   const [lawyers, setLawyers] = useState<TopLawyer[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isFallback, setIsFallback] = useState(false);
-  const [alertState, setAlertState] = useState<AlertState>({ isOpen: false, title: '', message: '' });
   const [showCityInput, setShowCityInput] = useState(false);
   const [city, setCity] = useState('');
   const [isCitySearchLoading, setIsCitySearchLoading] = useState(false);
@@ -31,24 +23,21 @@ export function TopLawyers() {
       setIsLoading(true);
       setError(null);
       setIsFallback(false);
+      setShowCityInput(false);
 
       if (!navigator.geolocation) {
-        showErrorAlert('Geolocation Not Supported', 'Your browser does not support geolocation. We will try to find your approximate location.');
+        console.warn('Geolocation is not supported by this browser.');
         fetchApproxLocation();
         return;
       }
 
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          const { lat, lng } = { lat: position.coords.latitude, lng: position.coords.longitude };
-          fetchLawyers({ lat, lng });
+          const { latitude, longitude } = position.coords;
+          fetchLawyers({ lat: latitude, lng: longitude });
         },
         (geoError) => {
-          if (geoError.code === geoError.PERMISSION_DENIED) {
-            showErrorAlert('Location Access Denied', 'You have denied location access. To find nearby lawyers, please enable it in your browser settings. We will now try to find your approximate location.');
-          } else {
-             showErrorAlert('Location Error', `Could not determine your location (Error ${geoError.code}). We will try to find your approximate location.`);
-          }
+          console.warn('Geolocation error:', geoError.code, geoError.message);
           fetchApproxLocation();
         },
         { timeout: 7000, maximumAge: 60000 }
@@ -78,6 +67,7 @@ export function TopLawyers() {
         setShowCityInput(true);
       } else {
         setShowCityInput(false);
+        setError(null);
       }
       setLawyers(result.lawyers);
     } catch (e) {
@@ -101,20 +91,14 @@ export function TopLawyers() {
       setIsFallback(true); // Searches by city are also "approximate"
       await fetchLawyers({ lat, lng });
     } catch (err) {
-      setError(`Could not find coordinates for "${city}". Please check the spelling or try a different city.`);
+      const errorMessage = (err as Error).message || `Could not find coordinates for "${city}". Please check the spelling or try a different city.`;
+      setError(errorMessage);
+       setShowCityInput(true); // Keep the input visible on error
     } finally {
       setIsCitySearchLoading(false);
     }
   };
     
-  const showErrorAlert = (title: string, message: string) => {
-    setAlertState({ isOpen: true, title, message });
-  };
-
-  const closeAlert = () => {
-    setAlertState({ isOpen: false, title: '', message: '' });
-  };
-
   const renderContent = () => {
     if (isLoading) {
       return (
@@ -158,16 +142,6 @@ export function TopLawyers() {
           </form>
         </div>
       );
-    }
-
-    if (error && lawyers.length === 0) {
-        return (
-            <div className="flex flex-col items-center justify-center text-center p-8 bg-muted/50 rounded-lg">
-                <AlertCircle className="w-12 h-12 text-destructive/80 mb-4" />
-                <h3 className="text-lg font-semibold text-foreground">An Error Occurred</h3>
-                <p className="text-muted-foreground text-sm max-w-sm">{error}</p>
-            </div>
-        );
     }
 
     return (
@@ -231,19 +205,6 @@ export function TopLawyers() {
         {renderContent()}
       </CardContent>
     </Card>
-    <AlertDialog open={alertState.isOpen} onOpenChange={(open) => !open && closeAlert()}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>{alertState.title}</AlertDialogTitle>
-          <AlertDialogDescription>
-            {alertState.message}
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogAction onClick={closeAlert}>OK</AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
     </>
   );
 }

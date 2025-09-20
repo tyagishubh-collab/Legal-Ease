@@ -1,7 +1,7 @@
 'use server';
 
 import { z } from 'zod';
-import type { Summary, Explanation, RiskAnalysis, SuggestedRewrite, AnalyzeDocumentRiskOutput, AnalyzeDocumentSafetyOutput, TopLawyer, GetTopLawyersInput, GetApproxLocationOutput, GetCityCoordinatesInput } from './types';
+import type { Summary, Explanation, RiskAnalysis, SuggestedRewrite, AnalyzeDocumentRiskOutput, AnalyzeDocumentSafetyOutput, TopLawyer, GetTopLawyersInput, GetApproxLocationOutput, GetCityCoordinatesInput, GetCityCoordinatesOutput } from './types';
 import {
   SummarizeClauseInput,
   summarizeClause,
@@ -180,7 +180,7 @@ export async function getApproxLocationAction(): Promise<GetApproxLocationOutput
     return await getApproxLocation();
 }
 
-export async function getCityCoordinatesAction(input: GetCityCoordinatesInput): Promise<{ lat: number, lng: number }> {
+export async function getCityCoordinatesAction(input: GetCityCoordinatesInput): Promise<GetCityCoordinatesOutput> {
     const validatedInput = GetCityCoordinatesInputSchema.safeParse(input);
     if (!validatedInput.success) {
         throw new Error('Invalid input for getCityCoordinatesAction');

@@ -15,8 +15,6 @@ import {
 } from '@/lib/types';
 
 
-// This is a placeholder for the actual Google Places API tool.
-// In a real implementation, this tool would make an HTTP request to the Places API.
 const findNearbyLawyersTool = ai.defineTool(
     {
       name: 'findNearbyLawyers',
@@ -27,7 +25,6 @@ const findNearbyLawyersTool = ai.defineTool(
               name: z.string(),
               rating: z.number().optional(),
               vicinity: z.string().optional(),
-              formatted_address: z.string().optional(),
               place_id: z.string(),
           }))
       }),
@@ -36,11 +33,10 @@ const findNearbyLawyersTool = ai.defineTool(
         const apiKey = process.env.GOOGLE_PLACES_API_KEY;
         if (!apiKey) {
             console.error("GOOGLE_PLACES_API_KEY is not set.");
-            // Return an empty array or throw an error if the key is missing
             return { results: [] };
         }
         
-        const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&rankby=prominence&radius=5000&keyword=lawyer&key=${apiKey}&fields=name,rating,formatted_address,place_id,vicinity`;
+        const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=5000&keyword=lawyer&key=${apiKey}&fields=name,rating,place_id,vicinity`;
 
         try {
             const response = await fetch(url);
@@ -53,7 +49,6 @@ const findNearbyLawyersTool = ai.defineTool(
             return data;
         } catch (error) {
             console.error("Failed to fetch from Google Places API:", error);
-            // In case of a network error or other fetch-related issue
             return { results: [] };
         }
     }
@@ -81,11 +76,11 @@ const getTopLawyersFlow = ai.defineFlow(
         .map(lawyer => ({
             name: lawyer.name,
             rating: lawyer.rating || 0,
-            address: lawyer.formatted_address || lawyer.vicinity || 'Address not available',
+            address: lawyer.vicinity || 'Address not available',
             placeId: lawyer.place_id,
         }))
-        .sort((a, b) => b.rating - a.rating) // Sort by rating descending
-        .slice(0, 10); // Return top 10
+        .sort((a, b) => b.rating - a.rating)
+        .slice(0, 10);
 
     return { lawyers };
   }

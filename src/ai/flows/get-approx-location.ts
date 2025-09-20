@@ -35,7 +35,6 @@ const getApproxLocationFlow = ai.defineFlow(
     outputSchema: GetApproxLocationOutputSchema,
   },
   async () => {
-    // Use the specific Geolocation key first, fallback to the generic Places key.
     const apiKey = process.env.GOOGLE_GEOLOCATION_API_KEY || process.env.GOOGLE_PLACES_API_KEY;
     
     if (!apiKey) {
@@ -65,12 +64,10 @@ const getApproxLocationFlow = ai.defineFlow(
       }
 
       if (responseData.location) {
-        // Validate the output with Zod before returning.
-        const validatedLocation = GetApproxLocationOutputSchema.parse({
+        return GetApproxLocationOutputSchema.parse({
             lat: responseData.location.lat,
             lng: responseData.location.lng,
         });
-        return validatedLocation;
       } else {
         throw new Error("Geolocation API response did not contain a 'location' object.");
       }

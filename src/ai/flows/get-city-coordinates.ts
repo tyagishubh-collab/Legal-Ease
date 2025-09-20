@@ -6,7 +6,6 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
 import {
     GetCityCoordinatesInput,
     GetCityCoordinatesInputSchema,
@@ -45,14 +44,14 @@ const getCityCoordinatesFlow = ai.defineFlow(
         
         const location = data.results[0]?.geometry?.location;
         if (!location) {
-            throw new Error('Could not find coordinates for the specified city.');
+            throw new Error(`Could not find coordinates for "${cityName}".`);
         }
 
         return { lat: location.lat, lng: location.lng };
 
     } catch (error) {
         console.error("Failed to fetch from Google Geocoding API:", error);
-        throw new Error('Failed to retrieve coordinates for the city.');
+        throw new Error((error as Error).message || 'Failed to retrieve coordinates for the city.');
     }
   }
 );
