@@ -1,7 +1,7 @@
 'use server';
 
 import { z } from 'zod';
-import type { Summary, Explanation, RiskAnalysis, SuggestedRewrite, AnalyzeDocumentRiskOutput } from './types';
+import type { Summary, Explanation, RiskAnalysis, SuggestedRewrite, AnalyzeDocumentRiskOutput, AnalyzeDocumentSafetyOutput } from './types';
 import {
   SummarizeClauseInput,
   summarizeClause,
@@ -23,6 +23,7 @@ import {
   answerContractQuestions,
 } from '@/ai/flows/answer-contract-questions';
 import { analyzeDocumentRisk } from '@/ai/flows/analyze-document-risk';
+import { analyzeDocumentSafety } from '@/ai/flows/analyze-document-safety';
 import { contract } from '@/lib/data';
 
 
@@ -119,9 +120,14 @@ const analyzeDocumentSchema = z.object({
   file: z.instanceof(File),
 });
 
+type DocumentAnalysisResult = {
+    riskAnalysis: AnalyzeDocumentRiskOutput;
+    safetyAnalysis: AnalyzeDocumentSafetyOutput;
+};
+
 export async function analyzeDocumentAction(
   input: z.infer<typeof analyzeDocumentSchema>
-): Promise<AnalyzeDocumentRiskOutput> {
+): Promise<DocumentAnalysisResult> {
   const validatedInput = analyzeDocumentSchema.safeParse(input);
   if (!validatedInput.success) {
     throw new Error('Invalid input for analyzeDocumentAction');
@@ -133,5 +139,11 @@ export async function analyzeDocumentAction(
   const base64 = Buffer.from(buffer).toString('base64');
   const documentDataUri = `data:${file.type};base64,${base64}`;
 
-  return await analyzeDocumentRisk({ documentDataUri });
+  // Run both analyses in parallel
+  const [riskAnalysis, safetyAnalysis] = await Promise.all([
+    analyzeDocumentRisk({ documentDataUri }),
+    analyzeDocumentSafety({ documentDataUri })
+  ]);
+  
+  return { riskAnalysis, safetyAnalysis };
 }

@@ -13,7 +13,7 @@ export type Clause = {
 };
 
 export type Contract = {
-  title: string;
+  title:string;
   clauses: Clause[];
 };
 
@@ -62,10 +62,35 @@ export const AnalyzeDocumentRiskOutputSchema = z.object({
     .describe('An array of clauses identified as low risk.'),
 });
 
+export const AnalyzeDocumentSafetyInputSchema = z.object({
+    documentDataUri: z
+      .string()
+      .describe(
+        "The contract document to analyze, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
+      ),
+  });
+  
+  export const AnalyzeDocumentSafetyOutputSchema = z.object({
+    safetyScore: z
+      .number()
+      .describe(
+        'An overall safety score for the document, from 0 to 100, where 100 is perfectly safe.'
+      ),
+    keyRisk: z
+      .string()
+      .describe('A single, concise sentence summarizing the most critical risk.'),
+  });
+
 // Export inferred types from schemas
 export type AnalyzeDocumentRiskInput = z.infer<
   typeof AnalyzeDocumentRiskInputSchema
 >;
 export type AnalyzeDocumentRiskOutput = z.infer<
   typeof AnalyzeDocumentRiskOutputSchema
+>;
+export type AnalyzeDocumentSafetyInput = z.infer<
+  typeof AnalyzeDocumentSafetyInputSchema
+>;
+export type AnalyzeDocumentSafetyOutput = z.infer<
+  typeof AnalyzeDocumentSafetyOutputSchema
 >;

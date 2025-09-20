@@ -1,6 +1,6 @@
 'use client';
 
-import type { AnalyzeDocumentRiskOutput } from "@/ai/flows/analyze-document-risk";
+import type { AnalyzeDocumentRiskOutput } from "@/lib/types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";

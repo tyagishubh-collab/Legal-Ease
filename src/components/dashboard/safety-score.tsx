@@ -29,33 +29,30 @@ export function SafetyScore({ value }: SafetyScoreProps) {
         label: 'Safe 🔒',
         badgeVariant: 'default',
         textColor: 'text-green-500',
+        badgeClass: 'bg-green-500/20 text-green-700 dark:bg-green-500/30 dark:text-green-300'
       };
     }
     if (score >= 60) {
       return {
-        label: 'Risky ⚠️',
+        label: 'Review ⚠️',
         badgeVariant: 'secondary',
         textColor: 'text-amber-500',
+        badgeClass: 'bg-amber-500/20 text-amber-700 dark:bg-amber-500/30 dark:text-amber-300'
       };
     }
     return {
-      label: 'Critical 🚨',
+      label: 'High Risk 🚨',
       badgeVariant: 'destructive',
       textColor: 'text-red-500',
+      badgeClass: 'bg-red-500/20 text-red-700 dark:bg-red-500/30 dark:text-red-300'
     };
   };
 
   const status = getStatus(value);
 
   return (
-    <Card className="h-full">
-      <CardHeader>
-        <CardTitle>Overall Safety Score</CardTitle>
-        <CardDescription>
-          Based on our analysis of all clauses.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="flex flex-col items-center justify-center space-y-6 pt-2">
+    <Card className="h-full border-none shadow-none">
+      <CardContent className="flex flex-col items-center justify-center space-y-4 pt-6">
         <div className="relative h-32 w-32">
           <svg className="h-full w-full" viewBox="0 0 36 36">
             <path
@@ -82,7 +79,7 @@ export function SafetyScore({ value }: SafetyScoreProps) {
           </div>
         </div>
 
-        <Badge variant={status.badgeVariant} className="text-sm">
+        <Badge variant={'outline'} className={cn('text-sm', status.badgeClass)}>
           {status.label}
         </Badge>
       </CardContent>

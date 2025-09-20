@@ -3,14 +3,20 @@
 import { useState, useTransition } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Loader2, FileUp, Sparkles } from 'lucide-react';
-import type { AnalyzeDocumentRiskOutput } from '@/lib/types';
+import type { AnalyzeDocumentRiskOutput, AnalyzeDocumentSafetyOutput } from '@/lib/types';
 import { AnalysisResult } from '@/components/contract/analysis-result';
 import { analyzeDocumentAction } from '@/lib/actions';
 import { Dropzone } from '@/components/contract/dropzone';
+import { SafetySummary } from '@/components/contract/safety-summary';
+
+type AnalysisResultBundle = {
+  riskAnalysis: AnalyzeDocumentRiskOutput;
+  safetyAnalysis: AnalyzeDocumentSafetyOutput;
+};
 
 export default function ContractPage() {
   const [isPending, startTransition] = useTransition();
-  const [analysisResult, setAnalysisResult] = useState<AnalyzeDocumentRiskOutput | null>(null);
+  const [analysisResult, setAnalysisResult] = useState<AnalysisResultBundle | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
@@ -55,13 +61,14 @@ export default function ContractPage() {
           <div className="p-4 sm:p-6 lg:p-8 border-b">
             <h1 className="text-3xl font-bold tracking-tight">{selectedFile?.name}</h1>
             <p className="mt-2 text-muted-foreground">
-              Analysis complete. Review the clauses below.
+              Analysis complete. Review the results below.
             </p>
           </div>
           <div className="flex-1 w-full p-4 sm:p-6 lg:p-8">
-            <div className="w-full max-w-4xl mx-auto">
+            <div className="w-full max-w-4xl mx-auto space-y-8">
+              <SafetySummary result={analysisResult.safetyAnalysis} />
               <Card>
-                <AnalysisResult result={analysisResult} />
+                <AnalysisResult result={analysisResult.riskAnalysis} />
               </Card>
             </div>
           </div>
