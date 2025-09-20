@@ -19,6 +19,38 @@ export function TopLawyers() {
   const [isCitySearchLoading, setIsCitySearchLoading] = useState(false);
 
   useEffect(() => {
+    const fetchLawyers = async ({ lat, lng }: { lat: number; lng: number }) => {
+      try {
+        const result = await getTopLawyersAction({ lat, lng });
+        if (result.lawyers.length === 0) {
+          setError("We couldn't find any lawyers in your immediate area. You may want to try searching a nearby city.");
+          setShowCityInput(true);
+        } else {
+          setShowCityInput(false);
+          setError(null);
+        }
+        setLawyers(result.lawyers);
+      } catch (e) {
+        console.error(e);
+        setError('Could not fetch lawyer data. Please try again later.');
+      } finally {
+        setIsLoading(false);
+        setIsCitySearchLoading(false);
+      }
+    };
+    
+    const fetchApproxLocation = async () => {
+      setIsFallback(true);
+      try {
+        const { lat, lng } = await getApproxLocationAction();
+        await fetchLawyers({ lat, lng });
+      } catch (e) {
+        console.error(e);
+        setError('Unable to determine your location. We could not find any lawyers for you at this time.');
+        setIsLoading(false);
+      }
+    };
+
     const fetchLocationAndLawyers = () => {
       setIsLoading(true);
       setError(null);
@@ -47,37 +79,6 @@ export function TopLawyers() {
     fetchLocationAndLawyers();
   }, []);
 
-  const fetchApproxLocation = async () => {
-    setIsFallback(true);
-    try {
-      const { lat, lng } = await getApproxLocationAction();
-      fetchLawyers({ lat, lng });
-    } catch (e) {
-      console.error(e);
-      setError('Unable to determine your location. We could not find any lawyers for you at this time.');
-      setIsLoading(false);
-    }
-  };
-
-  const fetchLawyers = async ({ lat, lng }: { lat: number; lng: number }) => {
-    try {
-      const result = await getTopLawyersAction({ lat, lng });
-      if (result.lawyers.length === 0) {
-        setError("We couldn't find any lawyers in your immediate area. You may want to try searching a nearby city.");
-        setShowCityInput(true);
-      } else {
-        setShowCityInput(false);
-        setError(null);
-      }
-      setLawyers(result.lawyers);
-    } catch (e) {
-      console.error(e);
-      setError('Could not fetch lawyer data. Please try again later.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const handleCitySearch = async (e: FormEvent) => {
     e.preventDefault();
     if (!city) return;
@@ -89,7 +90,17 @@ export function TopLawyers() {
     try {
       const { lat, lng } = await getCityCoordinatesAction({ cityName: city });
       setIsFallback(true); // Searches by city are also "approximate"
-      await fetchLawyers({ lat, lng });
+      const result = await getTopLawyersAction({ lat, lng });
+
+      if (result.lawyers.length === 0) {
+        setError(`We couldn't find any lawyers in or around "${city}". Please try another city.`);
+        setShowCityInput(true);
+      } else {
+        setShowCityInput(false);
+        setError(null);
+      }
+      setLawyers(result.lawyers);
+
     } catch (err) {
       const errorMessage = (err as Error).message || `Could not find coordinates for "${city}". Please check the spelling or try a different city.`;
       setError(errorMessage);
