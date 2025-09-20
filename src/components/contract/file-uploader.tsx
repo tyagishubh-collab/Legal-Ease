@@ -17,6 +17,7 @@ const ALLOWED_MIME_TYPES = [
   'application/pdf',
   'image/png',
   'image/jpeg',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 ];
 
 export function FileUploader({ children, onFileSelect, className }: FileUploaderProps) {
@@ -31,7 +32,7 @@ export function FileUploader({ children, onFileSelect, className }: FileUploader
       toast({
         variant: 'destructive',
         title: 'Invalid File Type',
-        description: 'Please upload a PDF, PNG, or JPG file.',
+        description: 'Please upload a PDF, DOCX, PNG, or JPG file.',
       });
     }
   }, [onFileSelect, toast]);
@@ -87,7 +88,7 @@ export function FileUploader({ children, onFileSelect, className }: FileUploader
         ref={inputRef}
         type="file"
         className="hidden"
-        accept=".pdf,.png,.jpg,.jpeg"
+        accept=".pdf,.png,.jpg,.jpeg,.docx"
         onChange={handleInputChange}
       />
       
@@ -97,7 +98,7 @@ export function FileUploader({ children, onFileSelect, className }: FileUploader
         <div className="pointer-events-none absolute inset-0 z-20 flex flex-col items-center justify-center gap-4 rounded-lg bg-background/80 backdrop-blur-sm transition-opacity duration-300 animate-in fade-in">
           <UploadCloud className="h-16 w-16 text-primary animate-pulse" />
           <p className="text-lg font-semibold text-primary">Drop document here</p>
-          <p className="text-sm text-muted-foreground">Supports: PDF, PNG, JPG</p>
+          <p className="text-sm text-muted-foreground">Supports: PDF, DOCX, PNG, JPG</p>
         </div>
       )}
     </div>

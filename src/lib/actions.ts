@@ -25,6 +25,7 @@ import {
 import { analyzeDocumentRisk } from '@/ai/flows/analyze-document-risk';
 import { analyzeDocumentSafety } from '@/ai/flows/analyze-document-safety';
 import { contract } from '@/lib/data';
+import mammoth from 'mammoth';
 
 
 const summarizeSchema = z.object({
@@ -125,6 +126,8 @@ type DocumentAnalysisResult = {
     safetyAnalysis: AnalyzeDocumentSafetyOutput;
 };
 
+const DOCX_MIME_TYPE = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+
 export async function analyzeDocumentAction(
   input: z.infer<typeof analyzeDocumentSchema>
 ): Promise<DocumentAnalysisResult> {
@@ -136,13 +139,25 @@ export async function analyzeDocumentAction(
   const { file } = validatedInput.data;
   
   const buffer = await file.arrayBuffer();
-  const base64 = Buffer.from(buffer).toString('base64');
-  const documentDataUri = `data:${file.type};base64,${base64}`;
+  
+  let riskInput = {};
+  let safetyInput = {};
+
+  if (file.type === DOCX_MIME_TYPE) {
+    const { value: documentText } = await mammoth.extractRawText({ buffer });
+    riskInput = { documentText };
+    safetyInput = { documentText };
+  } else {
+    const base64 = Buffer.from(buffer).toString('base64');
+    const documentDataUri = `data:${file.type};base64,${base64}`;
+    riskInput = { documentDataUri };
+    safetyInput = { documentDataUri };
+  }
 
   // Run both analyses in parallel
   const [riskAnalysis, safetyAnalysis] = await Promise.all([
-    analyzeDocumentRisk({ documentDataUri }),
-    analyzeDocumentSafety({ documentDataUri })
+    analyzeDocumentRisk(riskInput),
+    analyzeDocumentSafety(safetyInput)
   ]);
   
   return { riskAnalysis, safetyAnalysis };

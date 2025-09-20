@@ -40,9 +40,11 @@ export type SuggestedRewrite = {
 export const AnalyzeDocumentRiskInputSchema = z.object({
   documentDataUri: z
     .string()
+    .optional()
     .describe(
       "The contract document to analyze, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
     ),
+  documentText: z.string().optional().describe('The raw text of the document to analyze.')
 });
 
 const AnalyzedClauseSchema = z.object({
@@ -65,9 +67,11 @@ export const AnalyzeDocumentRiskOutputSchema = z.object({
 export const AnalyzeDocumentSafetyInputSchema = z.object({
     documentDataUri: z
       .string()
+      .optional()
       .describe(
         "The contract document to analyze, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
       ),
+    documentText: z.string().optional().describe('The raw text of the document to analyze.')
   });
   
   export const AnalyzeDocumentSafetyOutputSchema = z.object({

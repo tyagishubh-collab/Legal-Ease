@@ -42,7 +42,11 @@ The risk categories are:
 For each clause you identify, you must extract its title and full text, and place it into the appropriate risk category array in the output format.
 
 Analyze the following document:
+{{#if documentDataUri}}
 {{media url=documentDataUri}}
+{{else}}
+{{{documentText}}}
+{{/if}}
 `,
 });
 

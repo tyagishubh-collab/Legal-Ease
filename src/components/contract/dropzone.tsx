@@ -22,7 +22,7 @@ export function Dropzone({ onFileSelect, selectedFile, onClear }: DropzoneProps)
                     <p className="mb-2 text-base text-muted-foreground">
                         <span className="font-semibold text-primary">Click to upload</span> or drag and drop
                     </p>
-                    <p className="text-xs text-muted-foreground">PDF, PNG, or JPG</p>
+                    <p className="text-xs text-muted-foreground">PDF, DOCX, PNG, or JPG</p>
                 </div>
             ) : (
                 <div className="flex flex-col items-center justify-center z-10 p-4">

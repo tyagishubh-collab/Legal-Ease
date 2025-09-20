@@ -37,7 +37,11 @@ You will be given a contract document. Your task is to:
 4.  Summarize this key risk in a single, concise sentence.
 
 Analyze the following document:
+{{#if documentDataUri}}
 {{media url=documentDataUri}}
+{{else}}
+{{{documentText}}}
+{{/if}}
 `,
 });
 
