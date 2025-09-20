@@ -24,7 +24,7 @@ export function SafetyScore({ value }: SafetyScoreProps) {
   }, [value]);
 
   const getStatus = (score: number) => {
-    if (score <= 25) {
+    if (score < 25) {
       return {
         label: 'High risk',
         badgeVariant: 'destructive',
