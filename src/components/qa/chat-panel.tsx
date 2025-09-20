@@ -26,7 +26,12 @@ export function ChatPanel() {
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
-      setSelectedFile(event.target.files[0]);
+      const file = event.target.files[0];
+      if (file && (file.type.startsWith('image/') || file.type === 'application/pdf')) {
+        setSelectedFile(file);
+      } else {
+        alert('Only PDF and image files are allowed.');
+      }
     }
   };
 
@@ -190,6 +195,7 @@ export function ChatPanel() {
             ref={fileInputRef}
             type="file"
             className="hidden"
+            accept="application/pdf,image/*"
             onChange={handleFileChange}
           />
           <Input
