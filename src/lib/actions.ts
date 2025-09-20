@@ -1,7 +1,7 @@
 'use server';
 
 import { z } from 'zod';
-import type { Summary, Explanation, RiskAnalysis, SuggestedRewrite, AnalyzeDocumentRiskOutput, AnalyzeDocumentSafetyOutput } from './types';
+import type { Summary, Explanation, RiskAnalysis, SuggestedRewrite, AnalyzeDocumentRiskOutput, AnalyzeDocumentSafetyOutput, TopLawyer } from './types';
 import {
   SummarizeClauseInput,
   summarizeClause,
@@ -24,6 +24,7 @@ import {
 } from '@/ai/flows/answer-contract-questions';
 import { analyzeDocumentRisk } from '@/ai/flows/analyze-document-risk';
 import { analyzeDocumentSafety } from '@/ai/flows/analyze-document-safety';
+import { getTopLawyers, GetTopLawyersInput } from '@/ai/flows/get-top-lawyers';
 import { contract } from '@/lib/data';
 import mammoth from 'mammoth';
 
@@ -161,4 +162,18 @@ export async function analyzeDocumentAction(
   ]);
   
   return { riskAnalysis, safetyAnalysis };
+}
+
+const getTopLawyersSchema = z.object({
+  lat: z.number(),
+  lng: z.number(),
+});
+
+export async function getTopLawyersAction(input: GetTopLawyersInput): Promise<{ lawyers: TopLawyer[] }> {
+    const validatedInput = getTopLawyersSchema.safeParse(input);
+    if (!validatedInput.success) {
+        throw new Error('Invalid input for getTopLawyersAction');
+    }
+    const result = await getTopLawyers(validatedInput.data);
+    return { lawyers: result.lawyers };
 }

@@ -36,6 +36,13 @@ export type SuggestedRewrite = {
   suggestedRewrite: string;
 };
 
+export type TopLawyer = {
+    name: string;
+    rating: number;
+    address: string;
+    placeId: string;
+};
+
 // --- Schemas for AI Flows ---
 export const AnalyzeDocumentRiskInputSchema = z.object({
   documentDataUri: z

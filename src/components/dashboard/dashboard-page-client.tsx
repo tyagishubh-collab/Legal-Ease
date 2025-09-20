@@ -5,7 +5,7 @@ import { SafetyScore } from '@/components/dashboard/safety-score';
 import { RiskDistributionChart } from '@/components/dashboard/risk-distribution-chart';
 import { StatCards } from '@/components/dashboard/stat-cards';
 import { ClauseDrilldown } from '@/components/dashboard/clause-drilldown';
-import { MapChart } from './map-chart';
+import { TopLawyers } from './top-lawyers';
 
 type DashboardPageClientProps = {
   initialContract: Contract & {
@@ -97,8 +97,8 @@ export function DashboardPageClient({
           onCardClick={handleStatCardClick}
         />
       </div>
-      <div>
-        <MapChart />
+      <div className="pt-4">
+        <TopLawyers />
       </div>
       {drilldownState.isOpen && drilldownState.riskLevel && (
         <ClauseDrilldown
