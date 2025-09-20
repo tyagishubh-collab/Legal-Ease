@@ -103,11 +103,6 @@ export const GetTopLawyersOutputSchema = z.object({
   lawyers: z.array(TopLawyerSchema).describe('A list of top-rated lawyers found nearby.'),
 });
 
-export const GetApproxLocationOutputSchema = z.object({
-  lat: z.number().describe('The estimated latitude.'),
-  lng: z.number().describe('The estimated longitude.'),
-});
-
 export const GetCityCoordinatesInputSchema = z.object({
     cityName: z.string().describe("The name of the city to geocode."),
 });
@@ -116,6 +111,15 @@ export const GetCityCoordinatesOutputSchema = z.object({
     lat: z.number().describe('The latitude of the city.'),
     lng: z.number().describe('The longitude of the city.'),
 });
+
+export const GetTopLawyersFallbackInputSchema = z.object({
+  cityName: z.string().describe('The name of the city for the fallback search.'),
+});
+
+export const GetTopLawyersFallbackOutputSchema = z.object({
+  lawyers: z.array(TopLawyerSchema).describe('A list of lawyers found by the generative model.'),
+});
+
 
 // Export inferred types from schemas
 export type AnalyzeDocumentRiskInput = z.infer<
@@ -132,6 +136,7 @@ export type AnalyzeDocumentSafetyOutput = z.infer<
 >;
 export type GetTopLawyersInput = z.infer<typeof GetTopLawyersInputSchema>;
 export type GetTopLawyersOutput = z.infer<typeof GetTopLawyersOutputSchema>;
-export type GetApproxLocationOutput = z.infer<typeof GetApproxLocationOutputSchema>;
 export type GetCityCoordinatesInput = z.infer<typeof GetCityCoordinatesInputSchema>;
 export type GetCityCoordinatesOutput = z.infer<typeof GetCityCoordinatesOutputSchema>;
+export type GetTopLawyersFallbackInput = z.infer<typeof GetTopLawyersFallbackInputSchema>;
+export type GetTopLawyersFallbackOutput = z.infer<typeof GetTopLawyersFallbackOutputSchema>;

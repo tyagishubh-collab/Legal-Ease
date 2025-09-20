@@ -15,46 +15,6 @@ import {
 } from '@/lib/types';
 
 
-const findNearbyLawyersTool = ai.defineTool(
-    {
-      name: 'findNearbyLawyers',
-      description: 'Finds nearby lawyers using Google Places API based on latitude and longitude.',
-      inputSchema: GetTopLawyersInputSchema,
-      outputSchema: z.object({
-          results: z.array(z.object({
-              name: z.string(),
-              rating: z.number().optional(),
-              vicinity: z.string().optional(),
-              place_id: z.string(),
-          }))
-      }),
-    },
-    async ({ lat, lng }) => {
-        const apiKey = process.env.GOOGLE_PLACES_API_KEY;
-        if (!apiKey) {
-            console.error("GOOGLE_PLACES_API_KEY is not set.");
-            return { results: [] };
-        }
-        
-        const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=5000&keyword=lawyer&key=${apiKey}&fields=name,rating,place_id,vicinity`;
-
-        try {
-            const response = await fetch(url);
-            const data = await response.json();
-             console.log("Google Places API Raw Response:", JSON.stringify(data, null, 2));
-
-            if (!response.ok) {
-                throw new Error(`Google Places API request failed with status ${response.status}: ${JSON.stringify(data)}`);
-            }
-            return data;
-        } catch (error) {
-            console.error("Failed to fetch from Google Places API:", error);
-            return { results: [] };
-        }
-    }
-);
-
-
 export async function getTopLawyers(input: GetTopLawyersInput): Promise<GetTopLawyersOutput> {
   return getTopLawyersFlow(input);
 }
@@ -65,23 +25,41 @@ const getTopLawyersFlow = ai.defineFlow(
     inputSchema: GetTopLawyersInputSchema,
     outputSchema: GetTopLawyersOutputSchema,
   },
-  async (input) => {
-    const placesResponse = await findNearbyLawyersTool(input);
-
-    if (!placesResponse || !placesResponse.results) {
+  async ({ lat, lng }) => {
+    const apiKey = process.env.GOOGLE_PLACES_API_KEY;
+    if (!apiKey) {
+        console.error("GOOGLE_PLACES_API_KEY is not set.");
+        // Return empty array instead of throwing to allow Gemini fallback
         return { lawyers: [] };
     }
+    
+    const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=5000&keyword=lawyer&key=${apiKey}&fields=name,rating,place_id,vicinity`;
 
-    const lawyers = placesResponse.results
-        .map(lawyer => ({
-            name: lawyer.name,
-            rating: lawyer.rating || 0,
-            address: lawyer.vicinity || 'Address not available',
-            placeId: lawyer.place_id,
-        }))
-        .sort((a, b) => b.rating - a.rating)
-        .slice(0, 10);
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        console.log("Google Places API Raw Response:", JSON.stringify(data, null, 2));
 
-    return { lawyers };
+        if (!response.ok || !data.results) {
+            console.error(`Google Places API request failed with status ${data.status}: ${data.error_message || JSON.stringify(data)}`);
+            return { lawyers: [] };
+        }
+
+        const lawyers = data.results
+            .map((lawyer: any) => ({
+                name: lawyer.name,
+                rating: lawyer.rating || 0,
+                address: lawyer.vicinity || 'Address not available',
+                placeId: lawyer.place_id,
+            }))
+            .sort((a: any, b: any) => b.rating - a.rating)
+            .slice(0, 10);
+            
+        return { lawyers };
+
+    } catch (error) {
+        console.error("Failed to fetch from Google Places API:", error);
+        return { lawyers: [] };
+    }
   }
 );
