@@ -14,7 +14,8 @@ import { Logo } from '@/components/layout/logo';
 import { Button } from '@/components/ui/button';
 import { LogOut, User } from 'lucide-react';
 import { ThemeToggle } from '../ui/theme-toggle';
-import { Avatar, AvatarFallback } from '../ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import Link from 'next/link';
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   
@@ -55,11 +56,14 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             </div>
             <div className="flex items-center gap-4">
               <ThemeToggle />
-              <Avatar className="h-9 w-9">
-                <AvatarFallback>
-                  <User />
-                </AvatarFallback>
-              </Avatar>
+              <Link href="/profile">
+                <Avatar className="h-9 w-9 cursor-pointer">
+                  <AvatarImage src="https://picsum.photos/seed/1/200" data-ai-hint="user avatar" />
+                  <AvatarFallback>
+                    <User />
+                  </AvatarFallback>
+                </Avatar>
+              </Link>
             </div>
           </header>
           <main className="flex-1 overflow-auto">{children}</main>
