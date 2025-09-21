@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, FormEvent, useEffect, useTransition } from 'react';
+import { useState, FormEvent } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,7 +8,6 @@ import { getTopLawyersAction } from '@/lib/actions';
 import type { TopLawyer } from '@/lib/types';
 import { AlertCircle, Loader2, MapPin, Star, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogAction } from '@/components/ui/alert-dialog';
 import { Skeleton } from '../ui/skeleton';
 
 export function TopLawyers() {
@@ -16,7 +15,6 @@ export function TopLawyers() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [city, setCity] = useState('');
-  const [searchedCity, setSearchedCity] = useState('');
   
   const handleCitySearch = async (e: FormEvent) => {
     e.preventDefault();
@@ -28,7 +26,6 @@ export function TopLawyers() {
     setIsLoading(true);
     setError(null);
     setLawyers([]);
-    setSearchedCity(city);
 
     try {
       const { lawyers: fetchedLawyers } = await getTopLawyersAction({ cityName: city });
@@ -117,7 +114,7 @@ export function TopLawyers() {
                     </Button>
                   </CardContent>
                 </Card>
-              </motion.IFrame>
+              </motion.div>
             ))}
           </div>
         );
