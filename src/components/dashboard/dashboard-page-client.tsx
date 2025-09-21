@@ -4,11 +4,14 @@ import type {
   AnalyzeDocumentRiskOutput,
   AnalyzeDocumentSafetyOutput,
   GetDocumentPrecautionsOutput,
+  Clause,
+  RiskAnalysis,
 } from '@/lib/types';
 import { SafetyScore } from '@/components/dashboard/safety-score';
 import { RiskDistributionChart } from '@/components/dashboard/risk-distribution-chart';
 import { StatCards } from '@/components/dashboard/stat-cards';
 import { TopLawyers } from './top-lawyers';
+import { ClauseDrilldown } from './clause-drilldown';
 
 type DashboardPageClientProps = {
   initialRiskAnalysis: AnalyzeDocumentRiskOutput;
@@ -26,6 +29,10 @@ export function DashboardPageClient({
   const [precautions, setPrecautions] = useState<
     GetDocumentPrecautionsOutput | undefined
   >(initialPrecautions);
+  
+  const [isDrilldownOpen, setIsDrilldownOpen] = useState(false);
+  const [selectedRiskLevel, setSelectedRiskLevel] = useState<'high' | 'medium' | 'low'>('high');
+
 
   useEffect(() => {
     // On mount, check if there are newer results in localStorage
@@ -55,16 +62,32 @@ export function DashboardPageClient({
     }
   }, [initialPrecautions, initialRiskAnalysis, initialSafetyAnalysis]);
 
+  const handleCardClick = (riskLevel: 'high' | 'medium' | 'low') => {
+    setSelectedRiskLevel(riskLevel);
+    setIsDrilldownOpen(true);
+  };
+  
+  const handleClauseUpdate = (clauseId: string, newText: string, newRisk: RiskAnalysis) => {
+    // This function would be more complex in a real app, involving state updates
+    // and potentially re-calculating the safety score.
+    console.log('Updating clause:', { clauseId, newText, newRisk });
+    // For now, we'll just log it
+  };
+
+
   const {
     highRiskClauses = [],
     mediumRiskClauses = [],
     lowRiskClauses = [],
   } = riskAnalysis ?? {};
+  
+  const allClauses = [
+      ...highRiskClauses,
+      ...mediumRiskClauses,
+      ...lowRiskClauses
+  ];
 
-  const totalClauses =
-    (highRiskClauses?.length ?? 0) +
-    (mediumRiskClauses?.length ?? 0) +
-    (lowRiskClauses?.length ?? 0);
+  const totalClauses = allClauses.length;
 
   const riskCounts = {
     high: highRiskClauses?.length ?? 0,
@@ -81,6 +104,19 @@ export function DashboardPageClient({
     },
     { name: 'High Risk', value: riskCounts.high, fill: 'hsl(var(--chart-3))' },
   ];
+  
+  const clausesForDrilldown = () => {
+    switch (selectedRiskLevel) {
+        case 'high':
+            return highRiskClauses;
+        case 'medium':
+            return mediumRiskClauses;
+        case 'low':
+            return lowRiskClauses;
+        default:
+            return [];
+    }
+  }
 
   return (
     <div className="space-y-8">
@@ -95,12 +131,21 @@ export function DashboardPageClient({
         <StatCards
           riskCounts={riskCounts}
           totalClauses={totalClauses}
+          onCardClick={handleCardClick}
         />
       </div>
       
       <div className="pt-4">
         <TopLawyers />
       </div>
+
+       <ClauseDrilldown 
+        isOpen={isDrilldownOpen}
+        onClose={() => setIsDrilldownOpen(false)}
+        clauses={clausesForDrilldown() as (Clause & { risk: RiskAnalysis })[]}
+        riskLevel={selectedRiskLevel}
+        onClauseUpdate={handleClauseUpdate}
+      />
     </div>
   );
 }
