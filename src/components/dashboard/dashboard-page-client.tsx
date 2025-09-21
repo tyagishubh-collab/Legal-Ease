@@ -8,7 +8,6 @@ import type {
 import { SafetyScore } from '@/components/dashboard/safety-score';
 import { RiskDistributionChart } from '@/components/dashboard/risk-distribution-chart';
 import { StatCards } from '@/components/dashboard/stat-cards';
-import { ClauseList } from '@/components/dashboard/clause-list';
 import { TopLawyers } from './top-lawyers';
 
 type DashboardPageClientProps = {
@@ -56,12 +55,11 @@ export function DashboardPageClient({
     }
   }, [initialPrecautions, initialRiskAnalysis, initialSafetyAnalysis]);
 
-  const { highRiskClauses, mediumRiskClauses, lowRiskClauses } =
-    riskAnalysis ?? {
-      highRiskClauses: [],
-      mediumRiskClauses: [],
-      lowRiskClauses: [],
-    };
+  const {
+    highRiskClauses = [],
+    mediumRiskClauses = [],
+    lowRiskClauses = [],
+  } = riskAnalysis ?? {};
 
   const totalClauses =
     (highRiskClauses?.length ?? 0) +
@@ -100,24 +98,6 @@ export function DashboardPageClient({
         />
       </div>
       
-      <div className="space-y-4 pt-4">
-        <ClauseList
-          clauses={highRiskClauses}
-          riskLevel="high"
-          title="High Risk"
-        />
-        <ClauseList
-          clauses={mediumRiskClauses}
-          riskLevel="medium"
-          title="Medium Risk"
-        />
-        <ClauseList
-          clauses={lowRiskClauses}
-          riskLevel="low"
-          title="Low Risk"
-        />
-      </div>
-
       <div className="pt-4">
         <TopLawyers />
       </div>
