@@ -213,3 +213,66 @@ body:hover .cursor-trail {
   fill: white;
   transform: scale(1.2);
 }
+
+/* Custom Download Button */
+.botao {
+  position: relative;
+  width: 125px;
+  height: 45px;
+  border-radius: 20px;
+  border: none;
+  box-shadow: 1px 1px hsla(var(--primary) / 0.37);
+  padding: 5px 10px;
+  background: linear-gradient(160deg, hsl(var(--primary)) 0%, hsl(var(--chart-2)) 100%);
+  color: hsl(var(--primary-foreground));
+  font-family: Roboto, sans-serif;
+  font-weight: 505;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  filter: drop-shadow(0 0 10px hsla(var(--primary) / 0.568));
+  transition: .5s linear;
+}
+
+.botao .mysvg {
+  display: none;
+}
+
+.botao:hover {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  transition: .5s linear;
+}
+
+.botao:hover .texto {
+  display: none;
+}
+
+.botao:hover .mysvg {
+  display: inline;
+}
+
+.botao:hover::before {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  width: 100%;
+  height: 100%;
+  border: 3.5px solid transparent;
+  border-top: 3.5px solid hsl(var(--primary-foreground));
+  border-right: 3.5px solid hsl(var(--primary-foreground));
+  border-radius: 50%;
+  animation: animateC 2s linear infinite;
+}
+
+@keyframes animateC {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}

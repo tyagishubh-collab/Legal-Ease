@@ -1,6 +1,5 @@
 'use client';
 
-import { Button } from '../ui/button';
 import { Download } from 'lucide-react';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
@@ -35,7 +34,7 @@ export function DashboardPageHeader({ clauses }: DashboardPageHeaderProps) {
 
     doc.setFont('Poppins', 'bold');
     doc.setFontSize(22);
-    doc.text('LegalEase Report', 14, 22);
+    doc.text('ClauseWise Report', 14, 22);
 
     doc.setFont('Inter', 'normal');
     doc.setFontSize(12);
@@ -90,7 +89,7 @@ export function DashboardPageHeader({ clauses }: DashboardPageHeaderProps) {
       });
     }
 
-    doc.save('LegalEase-Report.pdf');
+    doc.save('ClauseWise-Report.pdf');
   };
 
   return (
@@ -98,9 +97,36 @@ export function DashboardPageHeader({ clauses }: DashboardPageHeaderProps) {
       <h1 className="font-headline text-3xl font-bold tracking-tight">
         Contract Dashboard
       </h1>
-      <Button onClick={handleExport}>
-        <Download className="mr-2 h-4 w-4" /> Export as PDF
-      </Button>
+      <button className="botao" onClick={handleExport}>
+        <svg
+          width="24px"
+          height="24px"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="mysvg"
+        >
+          <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+          <g
+            id="SVGRepo_tracerCarrier"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          ></g>
+          <g id="SVGRepo_iconCarrier">
+            <g id="Interface / Download">
+              <path
+                id="Vector"
+                d="M6 21H18M12 3V17M12 17L17 12M12 17L7 12"
+                stroke="#f1f1f1"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              ></path>
+            </g>
+          </g>
+        </svg>
+        <span className="texto">Download</span>
+      </button>
     </div>
   );
 }
