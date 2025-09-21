@@ -85,12 +85,6 @@ export function SafetyScore({ value }: SafetyScoreProps) {
             </div>
         </div>
         
-        <div className='flex flex-col items-end'>
-            <Badge variant={'outline'} className={cn('text-sm px-4 py-1', status.badgeClass)}>
-                {status.label}
-            </Badge>
-        </div>
-
       </CardContent>
     </Card>
   );
