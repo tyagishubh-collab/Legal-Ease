@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, ChangeEvent } from 'react';
+import { useState, useRef, ChangeEvent, FormEvent } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,11 +11,23 @@ import { Textarea } from "@/components/ui/textarea";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { ImageViewer } from '@/components/profile/image-viewer';
 import { User, Edit, Eye, Upload } from "lucide-react";
+import { useToast } from '@/hooks/use-toast';
 
 export default function ProfilePage() {
+  const { toast } = useToast();
   const [avatarUrl, setAvatarUrl] = useState("https://picsum.photos/seed/1/200");
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // State for form fields
+  const [name, setName] = useState("Alex Doe");
+  const [phone, setPhone] = useState("+1 (555) 123-4567");
+  const [dob, setDob] = useState("1990-01-01");
+  const [address, setAddress] = useState("123 Main St, Anytown, USA");
+  const [gender, setGender] = useState("male");
+  const [bio, setBio] = useState(
+    "Senior Legal Analyst at Acme Inc. Passionate about leveraging AI to streamline contract analysis and mitigate risks."
+  );
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -23,11 +35,34 @@ export default function ProfilePage() {
       const newAvatarUrl = URL.createObjectURL(file);
       setAvatarUrl(newAvatarUrl);
       // In a real app, you would upload the file to Firebase Storage here and save the URL.
+      toast({
+        title: "Profile Picture Updated",
+        description: "Your new profile picture has been set. Click 'Save Changes' to persist it.",
+      });
     }
   };
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
+  };
+
+  const handleSaveChanges = (e: FormEvent) => {
+    e.preventDefault();
+    // In a real app, you would send this data to your backend/Firebase here.
+    const userProfileData = {
+      name,
+      phone,
+      dob,
+      address,
+      gender,
+      bio,
+      avatarUrl,
+    };
+    console.log("Saving data:", userProfileData);
+    toast({
+      title: "Changes Saved!",
+      description: "Your profile has been successfully updated.",
+    });
   };
 
   return (
@@ -78,16 +113,16 @@ export default function ProfilePage() {
                 />
 
                 <div className="space-y-2">
-                  <h2 className="text-2xl font-bold">Alex Doe</h2>
+                  <h2 className="text-2xl font-bold">{name}</h2>
                   <p className="text-muted-foreground">alex.doe@example.com</p>
                 </div>
               </div>
 
-              <form className="space-y-6">
+              <form onSubmit={handleSaveChanges} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="name">Full Name</Label>
-                    <Input id="name" defaultValue="Alex Doe" />
+                    <Input id="name" value={name} onChange={(e) => setName(e.target.value)} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
@@ -95,20 +130,20 @@ export default function ProfilePage() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="phone">Phone Number</Label>
-                    <Input id="phone" type="tel" defaultValue="+1 (555) 123-4567" />
+                    <Input id="phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="dob">Date of Birth</Label>
-                    <Input id="dob" type="date" defaultValue="1990-01-01" />
+                    <Input id="dob" type="date" value={dob} onChange={(e) => setDob(e.target.value)} />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="address">Address</Label>
-                  <Input id="address" defaultValue="123 Main St, Anytown, USA" />
+                  <Input id="address" value={address} onChange={(e) => setAddress(e.target.value)} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="gender">Gender</Label>
-                  <Select defaultValue="male">
+                  <Select value={gender} onValueChange={setGender}>
                     <SelectTrigger id="gender">
                       <SelectValue placeholder="Select gender" />
                     </SelectTrigger>
@@ -124,12 +159,13 @@ export default function ProfilePage() {
                   <Label htmlFor="bio">Bio</Label>
                   <Textarea
                     id="bio"
-                    defaultValue="Senior Legal Analyst at Acme Inc. Passionate about leveraging AI to streamline contract analysis and mitigate risks."
+                    value={bio}
+                    onChange={(e) => setBio(e.target.value)}
                     className="min-h-[100px]"
                   />
                 </div>
                 <div className="flex justify-end pt-4">
-                  <Button>Save Changes</Button>
+                  <Button type="submit">Save Changes</Button>
                 </div>
               </form>
             </CardContent>
