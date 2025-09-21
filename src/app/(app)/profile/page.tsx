@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, ChangeEvent, FormEvent } from 'react';
+import { useState, useRef, ChangeEvent, FormEvent, useEffect } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,9 +13,11 @@ import { ImageViewer } from '@/components/profile/image-viewer';
 import { User, Edit, Eye, Upload } from "lucide-react";
 import { useToast } from '@/hooks/use-toast';
 
+const DEFAULT_AVATAR = "https://picsum.photos/seed/1/200";
+
 export default function ProfilePage() {
   const { toast } = useToast();
-  const [avatarUrl, setAvatarUrl] = useState("https://picsum.photos/seed/1/200");
+  const [avatarUrl, setAvatarUrl] = useState(DEFAULT_AVATAR);
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -29,12 +31,24 @@ export default function ProfilePage() {
     "Senior Legal Analyst at Acme Inc. Passionate about leveraging AI to streamline contract analysis and mitigate risks."
   );
 
+  useEffect(() => {
+    const savedAvatar = localStorage.getItem('user-avatar-url');
+    if (savedAvatar) {
+      setAvatarUrl(savedAvatar);
+    }
+  }, []);
+
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       const newAvatarUrl = URL.createObjectURL(file);
       setAvatarUrl(newAvatarUrl);
-      // In a real app, you would upload the file to Firebase Storage here and save the URL.
+      
+      // Save to localStorage to sync with AppShell
+      localStorage.setItem('user-avatar-url', newAvatarUrl);
+      // Dispatch a storage event to notify other tabs/windows
+      window.dispatchEvent(new StorageEvent('storage', { key: 'user-avatar-url' }));
+
       toast({
         title: "Profile Picture Updated",
         description: "Your new profile picture has been set. Click 'Save Changes' to persist it.",

@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import {
   SidebarProvider,
   Sidebar,
@@ -17,8 +18,32 @@ import { ThemeToggle } from '../ui/theme-toggle';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import Link from 'next/link';
 
+const DEFAULT_AVATAR = "https://picsum.photos/seed/1/200";
+
 export default function AppShell({ children }: { children: React.ReactNode }) {
+  const [avatarUrl, setAvatarUrl] = useState(DEFAULT_AVATAR);
   
+  useEffect(() => {
+    // Set initial avatar from localStorage
+    const savedAvatar = localStorage.getItem('user-avatar-url');
+    if (savedAvatar) {
+      setAvatarUrl(savedAvatar);
+    }
+    
+    // Listen for changes from other tabs/windows
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === 'user-avatar-url' && event.newValue) {
+        setAvatarUrl(event.newValue);
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
+
   const handleFileSelect = (file: File) => {
     // In a real app, you might navigate to the contract page
     // or start a global upload process.
@@ -58,7 +83,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               <ThemeToggle />
               <Link href="/profile">
                 <Avatar className="h-9 w-9 cursor-pointer">
-                  <AvatarImage src="https://picsum.photos/seed/1/200" data-ai-hint="user avatar" />
+                  <AvatarImage src={avatarUrl} data-ai-hint="user avatar" />
                   <AvatarFallback>
                     <User />
                   </AvatarFallback>
