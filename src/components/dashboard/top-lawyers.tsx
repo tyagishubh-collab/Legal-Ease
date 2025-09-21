@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useEffect, useTransition } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +8,8 @@ import { getTopLawyersAction } from '@/lib/actions';
 import type { TopLawyer } from '@/lib/types';
 import { AlertCircle, Loader2, MapPin, Star, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogAction } from '@/components/ui/alert-dialog';
+import { Skeleton } from '../ui/skeleton';
 
 export function TopLawyers() {
   const [lawyers, setLawyers] = useState<TopLawyer[]>([]);
@@ -15,7 +17,7 @@ export function TopLawyers() {
   const [isLoading, setIsLoading] = useState(false);
   const [city, setCity] = useState('');
   const [searchedCity, setSearchedCity] = useState('');
-
+  
   const handleCitySearch = async (e: FormEvent) => {
     e.preventDefault();
     if (!city) {
@@ -48,10 +50,19 @@ export function TopLawyers() {
   const renderContent = () => {
     if (isLoading) {
       return (
-         <div className="flex flex-col items-center justify-center text-center p-8">
-            <Loader2 className="w-12 h-12 text-primary animate-spin mb-4" />
-            <h3 className="text-lg font-semibold text-foreground">Fetching Lawyers</h3>
-            <p className="text-muted-foreground text-sm">Searching for top-rated lawyers in {searchedCity}...</p>
+         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(3)].map((_, i) => (
+                <Card key={i}>
+                    <CardHeader>
+                        <Skeleton className="h-5 w-3/4" />
+                        <Skeleton className="h-4 w-1/4 mt-1" />
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-10 w-full mt-4" />
+                    </CardContent>
+                </Card>
+            ))}
         </div>
       );
     }
@@ -79,7 +90,7 @@ export function TopLawyers() {
                 <Card className="h-full flex flex-col hover:shadow-lg transition-shadow duration-300">
                   <CardHeader>
                     <CardTitle className="text-lg">{lawyer.name}</CardTitle>
-                    {lawyer.rating > 0 && (
+                    {lawyer.rating && lawyer.rating > 0 && (
                       <div className="flex items-center gap-1.5 pt-1">
                         <span className="font-bold text-amber-500">{lawyer.rating.toFixed(1)}</span>
                         <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
@@ -88,34 +99,37 @@ export function TopLawyers() {
                   </CardHeader>
                   <CardContent className="flex-grow flex flex-col">
                     <div className="flex-grow">
-                        <div className="flex items-start gap-2 text-muted-foreground text-sm">
-                            <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                            <span>{lawyer.address}</span>
-                        </div>
+                        {lawyer.address && (
+                          <div className="flex items-start gap-2 text-muted-foreground text-sm">
+                              <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                              <span>{lawyer.address}</span>
+                          </div>
+                        )}
                     </div>
                     <Button 
                         asChild 
                         className="mt-4 w-full"
-                        onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=Lawyer&query_place_id=${lawyer.placeId}`, '_blank')}>
+                        disabled={!lawyer.placeId}
+                        onClick={() => lawyer.placeId && window.open(`https://www.google.com/maps/search/?api=1&query=Lawyer&query_place_id=${lawyer.placeId}`, '_blank')}>
                       <a target="_blank" rel="noopener noreferrer">
                         View on Maps
                       </a>
                     </Button>
                   </CardContent>
                 </Card>
-              </motion.div>
+              </motion.IFrame>
             ))}
           </div>
         );
     }
     
-    return null; // Initial state before any search
+    return null;
   };
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Find Top Lawyers By City</CardTitle>
+        <CardTitle>Connect With Nearby Lawyers</CardTitle>
         <CardDescription>
             Enter a city name to find highly-rated legal advisors in that area.
         </CardDescription>
