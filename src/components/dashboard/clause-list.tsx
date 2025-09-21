@@ -1,5 +1,5 @@
 import type { Clause, RiskAnalysis } from '@/lib/types';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { cn } from '@/lib/utils';
 import { AlertCircle, CheckCircle, XCircle } from 'lucide-react';
@@ -25,25 +25,16 @@ const riskStyles = {
   },
 };
 
-export function ClauseList({ clauses, riskLevel, title }: ClauseListProps) {
+export function ClauseList({ clauses, riskLevel }: ClauseListProps) {
   const styles = riskStyles[riskLevel];
 
   return (
     <Card className={cn('overflow-hidden', styles.borderColor)}>
-      <CardHeader className="flex flex-row items-center gap-4 space-y-0 bg-muted/30">
-        {styles.icon}
-        <div>
-          <CardTitle>{title}</CardTitle>
-          <CardDescription>
-            {clauses.length} {clauses.length === 1 ? 'clause' : 'clauses'} identified.
-          </CardDescription>
-        </div>
-      </CardHeader>
       <CardContent className="p-0">
         {clauses.length > 0 ? (
           <Accordion type="single" collapsible className="w-full">
             {clauses.map((clause, index) => (
-              <AccordionItem key={`${riskLevel}-${index}`} value={`item-${index}`} className={cn(index === 0 && "border-t")}>
+              <AccordionItem key={`${riskLevel}-${index}`} value={`item-${index}`} className={cn(index === 0 && "border-t", index === clauses.length-1 && "border-b-0")}>
                 <AccordionTrigger className="px-6 text-left hover:no-underline">
                   <span className='font-semibold'>{clause.title}</span>
                 </AccordionTrigger>
