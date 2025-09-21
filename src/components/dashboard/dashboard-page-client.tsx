@@ -1,6 +1,6 @@
 'use client';
-import { useState } from 'react';
-import type { Contract, Clause, RiskAnalysis } from '@/lib/types';
+import { useState, useEffect } from 'react';
+import type { AnalyzeDocumentRiskOutput, AnalyzeDocumentSafetyOutput, Clause, RiskAnalysis } from '@/lib/types';
 import { SafetyScore } from '@/components/dashboard/safety-score';
 import { RiskDistributionChart } from '@/components/dashboard/risk-distribution-chart';
 import { StatCards } from '@/components/dashboard/stat-cards';
@@ -9,44 +9,45 @@ import { TopLawyers } from './top-lawyers';
 import { ClauseList } from './clause-list';
 
 type DashboardPageClientProps = {
-  initialContract: Contract & {
-    riskAnalyses: (RiskAnalysis & { clauseId: string })[];
-  };
+  initialRiskAnalysis: AnalyzeDocumentRiskOutput;
+  initialSafetyAnalysis: AnalyzeDocumentSafetyOutput;
 };
 
 export function DashboardPageClient({
-  initialContract,
+  initialRiskAnalysis,
+  initialSafetyAnalysis,
 }: DashboardPageClientProps) {
-  const [contract, setContract] = useState(initialContract);
+  const [riskAnalysis, setRiskAnalysis] = useState(initialRiskAnalysis);
+  const [safetyAnalysis, setSafetyAnalysis] = useState(initialSafetyAnalysis);
 
   const [drilldownState, setDrilldownState] = useState<{
     isOpen: boolean;
     riskLevel: 'high' | 'medium' | 'low' | null;
   }>({ isOpen: false, riskLevel: null });
 
-  const clausesWithRisk = contract.clauses.map((clause) => {
-    const risk = contract.riskAnalyses.find((r) => r.clauseId === clause.id);
-    return { ...clause, risk: risk! };
-  });
+  useEffect(() => {
+    // On mount, check if there are newer results in localStorage
+    const storedRiskResult = localStorage.getItem('latest-analysis-result');
+    const storedSafetyResult = localStorage.getItem('latest-safety-result');
 
-  const totalClauses = clausesWithRisk.length;
-  const totalRiskScore = clausesWithRisk.reduce(
-    (sum, c) => sum + (c.risk?.riskScore || 0),
-    0
-  );
-  const averageRiskScore =
-    totalClauses > 0 ? totalRiskScore / totalClauses : 0;
-  const safetyScore = 100 - averageRiskScore;
+    if (storedRiskResult) {
+      setRiskAnalysis(JSON.parse(storedRiskResult));
+    }
+    if (storedSafetyResult) {
+        setSafetyAnalysis(JSON.parse(storedSafetyResult));
+    }
+  }, []);
 
-  const riskCounts = clausesWithRisk.reduce(
-    (acc, c) => {
-      if (c.risk) {
-        acc[c.risk.riskLevel]++;
-      }
-      return acc;
-    },
-    { high: 0, medium: 0, low: 0 }
-  );
+  const { highRiskClauses, mediumRiskClauses, lowRiskClauses } = riskAnalysis;
+
+  const totalClauses =
+    highRiskClauses.length + mediumRiskClauses.length + lowRiskClauses.length;
+
+  const riskCounts = {
+    high: highRiskClauses.length,
+    medium: mediumRiskClauses.length,
+    low: lowRiskClauses.length,
+  };
 
   const riskData = [
     { name: 'Low Risk', value: riskCounts.low, fill: 'hsl(var(--chart-5))' },
@@ -61,38 +62,32 @@ export function DashboardPageClient({
   const handleStatCardClick = (riskLevel: 'high' | 'medium' | 'low') => {
     setDrilldownState({ isOpen: true, riskLevel });
   };
-
+  
+  // This function is no longer needed as we are not updating clauses on the dashboard
+  // Leaving it here in case future functionality requires it.
   const handleClauseUpdate = (
     clauseId: string,
     newText: string,
     newRisk: RiskAnalysis
   ) => {
-    setContract((prevContract) => {
-      const newClauses = prevContract.clauses.map((c) =>
-        c.id === clauseId ? { ...c, text: newText } : c
-      );
-      const newRiskAnalyses = prevContract.riskAnalyses.map((r) =>
-        r.clauseId === clauseId ? { ...r, ...newRisk } : r
-      );
-      return { ...prevContract, clauses: newClauses, riskAnalyses: newRiskAnalyses };
-    });
+    // This would require a more complex state structure if we were to allow
+    // editing and re-analyzing from the dashboard. For now, analysis is one-way.
   };
 
-  const drilldownClauses =
-    drilldownState.riskLevel
-      ? clausesWithRisk.filter(
-          (c) => c.risk.riskLevel === drilldownState.riskLevel
-        )
-      : [];
-      
-  const highRiskClauses = clausesWithRisk.filter(c => c.risk.riskLevel === 'high');
-  const mediumRiskClauses = clausesWithRisk.filter(c => c.risk.riskLevel === 'medium');
-  const lowRiskClauses = clausesWithRisk.filter(c => c.risk.riskLevel === 'low');
+  const getDrilldownClauses = () => {
+    if (!drilldownState.riskLevel) return [];
+    switch (drilldownState.riskLevel) {
+        case 'high': return highRiskClauses;
+        case 'medium': return mediumRiskClauses;
+        case 'low': return lowRiskClauses;
+        default: return [];
+    }
+  }
 
   return (
     <div className='space-y-8'>
       <div>
-        <SafetyScore value={safetyScore} />
+        <SafetyScore value={safetyAnalysis.safetyScore} />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-8">
         <RiskDistributionChart data={riskData} />
@@ -104,9 +99,9 @@ export function DashboardPageClient({
       </div>
 
       <div className="space-y-8 pt-4">
-        <ClauseList clauses={highRiskClauses} riskLevel="high" title="High Risk Clauses" />
-        <ClauseList clauses={mediumRiskClauses} riskLevel="medium" title="Medium Risk Clauses" />
-        <ClauseList clauses={lowRiskClauses} riskLevel="low" title="Low Risk Clauses" />
+        <ClauseList clauses={highRiskClauses as (Clause & { risk: RiskAnalysis; })[]} riskLevel="high" title="High Risk Clauses" />
+        <ClauseList clauses={mediumRiskClauses as (Clause & { risk: RiskAnalysis; })[]} riskLevel="medium" title="Medium Risk Clauses" />
+        <ClauseList clauses={lowRiskClauses as (Clause & { risk: RiskAnalysis; })[]} riskLevel="low" title="Low Risk Clauses" />
       </div>
 
       <div className="pt-4">
@@ -117,7 +112,7 @@ export function DashboardPageClient({
           isOpen={drilldownState.isOpen}
           onClose={() => setDrilldownState({ isOpen: false, riskLevel: null })}
           riskLevel={drilldownState.riskLevel}
-          clauses={drilldownClauses}
+          clauses={getDrilldownClauses() as (Clause & { risk: RiskAnalysis; })[]}
           onClauseUpdate={handleClauseUpdate}
         />
       )}

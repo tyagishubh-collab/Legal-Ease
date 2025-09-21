@@ -3,13 +3,31 @@ import { contract as initialContract } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DashboardPageClient } from '@/components/dashboard/dashboard-page-client';
 import { DashboardPageHeader } from '@/components/dashboard/dashboard-page-header';
+import type { AnalyzeDocumentRiskOutput, AnalyzeDocumentSafetyOutput, Clause, RiskAnalysis } from '@/lib/types';
+
 
 export default async function DashboardPage() {
   // We can pass initial data to the client component
-  const clausesWithRisk = initialContract.clauses.map((clause) => {
+  // This will be overridden by client-side state if an analysis has been run
+  const clausesWithRisk: (Clause & { risk: RiskAnalysis })[] = initialContract.clauses.map((clause) => {
     const risk = initialContract.riskAnalyses.find((r) => r.clauseId === clause.id);
     return { ...clause, risk: risk! };
   });
+
+  const initialRiskAnalysis: AnalyzeDocumentRiskOutput = {
+    highRiskClauses: clausesWithRisk.filter(c => c.risk.riskLevel === 'high'),
+    mediumRiskClauses: clausesWithRisk.filter(c => c.risk.riskLevel === 'medium'),
+    lowRiskClauses: clausesWithRisk.filter(c => c.risk.riskLevel === 'low'),
+  }
+
+  const totalRiskScore = clausesWithRisk.reduce((sum, c) => sum + (c.risk?.riskScore || 0), 0);
+  const averageRiskScore = clausesWithRisk.length > 0 ? totalRiskScore / clausesWithRisk.length : 0;
+  const safetyScore = 100 - averageRiskScore;
+  
+  const initialSafetyAnalysis: AnalyzeDocumentSafetyOutput = {
+    safetyScore: safetyScore,
+    keyRisk: "The indemnification clause is uncapped, posing significant financial risk."
+  }
 
   return (
     <div className="flex-1 w-full min-h-screen p-4 sm:p-6 lg:p-8 bg-background overflow-x-hidden">
@@ -19,7 +37,10 @@ export default async function DashboardPage() {
       </p>
       <div className="mt-8">
         <Suspense fallback={<DashboardSkeleton />}>
-          <DashboardPageClient initialContract={initialContract} />
+          <DashboardPageClient 
+            initialRiskAnalysis={initialRiskAnalysis}
+            initialSafetyAnalysis={initialSafetyAnalysis}
+          />
         </Suspense>
       </div>
     </div>

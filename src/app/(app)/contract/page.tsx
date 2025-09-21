@@ -29,6 +29,12 @@ export default function ContractPage() {
       try {
         const result = await analyzeDocumentAction({ file: selectedFile });
         setAnalysisResult(result);
+        
+        // Save the result to localStorage for the dashboard to use
+        localStorage.setItem('latest-analysis-result', JSON.stringify(result.riskAnalysis));
+        localStorage.setItem('latest-safety-result', JSON.stringify(result.safetyAnalysis));
+        localStorage.setItem('latest-analysis-filename', selectedFile.name);
+
       } catch (e) {
         setError('An error occurred during analysis. Please try again.');
         console.error(e);

@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import { AlertCircle, CheckCircle, XCircle } from 'lucide-react';
 
 interface ClauseListProps {
-  clauses: (Clause & { risk: RiskAnalysis })[];
+  clauses: (Omit<Clause, 'id' | 'entities'> & { risk?: RiskAnalysis })[];
   riskLevel: 'high' | 'medium' | 'low';
   title: string;
 }
@@ -43,7 +43,7 @@ export function ClauseList({ clauses, riskLevel, title }: ClauseListProps) {
         {clauses.length > 0 ? (
           <Accordion type="single" collapsible className="w-full">
             {clauses.map((clause, index) => (
-              <AccordionItem key={clause.id} value={`item-${index}`} className={cn(index === 0 && "border-t")}>
+              <AccordionItem key={`${riskLevel}-${index}`} value={`item-${index}`} className={cn(index === 0 && "border-t")}>
                 <AccordionTrigger className="px-6 text-left hover:no-underline">
                   <span className='font-semibold'>{clause.title}</span>
                 </AccordionTrigger>
