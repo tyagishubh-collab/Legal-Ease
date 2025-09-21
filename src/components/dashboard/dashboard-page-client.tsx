@@ -6,6 +6,7 @@ import { RiskDistributionChart } from '@/components/dashboard/risk-distribution-
 import { StatCards } from '@/components/dashboard/stat-cards';
 import { ClauseDrilldown } from '@/components/dashboard/clause-drilldown';
 import { TopLawyers } from './top-lawyers';
+import { ClauseList } from './clause-list';
 
 type DashboardPageClientProps = {
   initialContract: Contract & {
@@ -83,9 +84,13 @@ export function DashboardPageClient({
           (c) => c.risk.riskLevel === drilldownState.riskLevel
         )
       : [];
+      
+  const highRiskClauses = clausesWithRisk.filter(c => c.risk.riskLevel === 'high');
+  const mediumRiskClauses = clausesWithRisk.filter(c => c.risk.riskLevel === 'medium');
+  const lowRiskClauses = clausesWithRisk.filter(c => c.risk.riskLevel === 'low');
 
   return (
-    <div className='space-y-4'>
+    <div className='space-y-8'>
       <div>
         <SafetyScore value={safetyScore} />
       </div>
@@ -97,6 +102,13 @@ export function DashboardPageClient({
           onCardClick={handleStatCardClick}
         />
       </div>
+
+      <div className="space-y-8 pt-4">
+        <ClauseList clauses={highRiskClauses} riskLevel="high" title="High Risk Clauses" />
+        <ClauseList clauses={mediumRiskClauses} riskLevel="medium" title="Medium Risk Clauses" />
+        <ClauseList clauses={lowRiskClauses} riskLevel="low" title="Low Risk Clauses" />
+      </div>
+
       <div className="pt-4">
         <TopLawyers />
       </div>
