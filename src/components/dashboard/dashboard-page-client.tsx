@@ -8,9 +8,7 @@ import type {
 import { SafetyScore } from '@/components/dashboard/safety-score';
 import { RiskDistributionChart } from '@/components/dashboard/risk-distribution-chart';
 import { StatCards } from '@/components/dashboard/stat-cards';
-import { HighRiskClauses } from '@/components/dashboard/high-risk-clauses';
-import { MediumRiskClauses } from '@/components/dashboard/medium-risk-clauses';
-import { LowRiskClauses } from '@/components/dashboard/low-risk-clauses';
+import { ClauseList } from '@/components/dashboard/clause-list';
 import { TopLawyers } from './top-lawyers';
 
 type DashboardPageClientProps = {
@@ -40,14 +38,14 @@ export function DashboardPageClient({
 
         // Safely destructure with default values
         const {
-          riskAnalysis: loadedRiskAnalysis = initialRiskAnalysis,
-          safetyAnalysis: loadedSafetyAnalysis = initialSafetyAnalysis,
-          precautions: loadedPrecautions = initialPrecautions,
+          riskAnalysis: loadedRiskAnalysis,
+          safetyAnalysis: loadedSafetyAnalysis,
+          precautions: loadedPrecautions,
         } = result ?? {};
 
-        setRiskAnalysis(loadedRiskAnalysis);
-        setSafetyAnalysis(loadedSafetyAnalysis);
-        setPrecautions(loadedPrecautions);
+        setRiskAnalysis(loadedRiskAnalysis ?? initialRiskAnalysis);
+        setSafetyAnalysis(loadedSafetyAnalysis ?? initialSafetyAnalysis);
+        setPrecautions(loadedPrecautions ?? initialPrecautions);
       } catch (error) {
         console.error('Failed to parse dashboard data from localStorage', error);
         // Fallback to initial props if parsing fails
@@ -58,7 +56,12 @@ export function DashboardPageClient({
     }
   }, [initialPrecautions, initialRiskAnalysis, initialSafetyAnalysis]);
 
-  const { highRiskClauses, mediumRiskClauses, lowRiskClauses } = riskAnalysis;
+  const { highRiskClauses, mediumRiskClauses, lowRiskClauses } =
+    riskAnalysis ?? {
+      highRiskClauses: [],
+      mediumRiskClauses: [],
+      lowRiskClauses: [],
+    };
 
   const totalClauses =
     (highRiskClauses?.length ?? 0) +
@@ -98,9 +101,21 @@ export function DashboardPageClient({
       </div>
       
       <div className="space-y-4 pt-4">
-        <HighRiskClauses clauses={highRiskClauses} />
-        <MediumRiskClauses clauses={mediumRiskClauses} />
-        <LowRiskClauses clauses={lowRiskClauses} />
+        <ClauseList
+          clauses={highRiskClauses}
+          riskLevel="high"
+          title="High Risk"
+        />
+        <ClauseList
+          clauses={mediumRiskClauses}
+          riskLevel="medium"
+          title="Medium Risk"
+        />
+        <ClauseList
+          clauses={lowRiskClauses}
+          riskLevel="low"
+          title="Low Risk"
+        />
       </div>
 
       <div className="pt-4">
