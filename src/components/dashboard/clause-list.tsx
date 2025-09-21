@@ -35,7 +35,7 @@ export function ClauseList({ clauses, riskLevel }: ClauseListProps) {
           <Accordion type="single" collapsible className="w-full">
             {clauses.map((clause, index) => (
               <AccordionItem key={`${riskLevel}-${index}`} value={`item-${index}`} className={cn(index === 0 && "border-t", index === clauses.length-1 && "border-b-0")}>
-                <AccordionTrigger className="px-6 text-left hover:no-underline">
+                <AccordionTrigger className="px-6 text-left">
                   <span className='font-semibold'>{clause.title}</span>
                 </AccordionTrigger>
                 <AccordionContent className="px-6">
