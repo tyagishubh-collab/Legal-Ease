@@ -26,7 +26,7 @@ export function SafetyScore({ value }: SafetyScoreProps) {
   const getStatus = (score: number) => {
     if (score < 25) {
       return {
-        label: 'Risk Calculated',
+        label: 'Overall Safety Score',
         badgeVariant: 'destructive',
         textColor: 'text-red-500',
         badgeClass: 'bg-red-500/20 text-red-700 dark:bg-red-500/30 dark:text-red-300'
@@ -34,14 +34,14 @@ export function SafetyScore({ value }: SafetyScoreProps) {
     }
     if (score < 70) {
       return {
-        label: 'Risk Calculated',
+        label: 'Overall Safety Score',
         badgeVariant: 'secondary',
         textColor: 'text-yellow-500',
         badgeClass: 'bg-yellow-500/20 text-yellow-700 dark:bg-yellow-500/30 dark:text-yellow-300'
       };
     }
     return {
-      label: 'Risk Calculated',
+      label: 'Overall Safety Score',
       badgeVariant: 'default',
       textColor: 'text-green-500',
       badgeClass: 'bg-green-500/20 text-green-700 dark:bg-green-500/30 dark:text-green-300'
