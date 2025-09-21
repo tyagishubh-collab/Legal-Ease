@@ -26,9 +26,15 @@ export function ClauseDrilldownModal({
   const [editedText, setEditedText] = useState(selectedClause.text);
   const [explanation, setExplanation] = useState<Explanation | null>(null);
   const [suggestedRewrite, setSuggestedRewrite] = useState<string | null>(null);
+  const [customRewriteInstruction, setCustomRewriteInstruction] = useState('');
+  const [customRewriteResult, setCustomRewriteResult] = useState<string | null>(null);
+  const [isCustomRewriteVisible, setIsCustomRewriteVisible] = useState(false);
+  
   const [isExplanationLoading, startExplanationTransition] = useTransition();
   const [isRewriteLoading, startRewriteTransition] = useTransition();
   const [isAnalysisLoading, startAnalysisTransition] = useTransition();
+  const [isCustomRewriteLoading, startCustomRewriteTransition] = useTransition();
+
   const { toast } = useToast();
 
   const handleClauseSelect = (clause: Clause) => {
@@ -36,6 +42,9 @@ export function ClauseDrilldownModal({
     setEditedText(clause.text);
     setExplanation(null);
     setSuggestedRewrite(null);
+    setCustomRewriteResult(null);
+    setCustomRewriteInstruction('');
+    setIsCustomRewriteVisible(false);
   };
 
   const getExplanation = () => {
@@ -56,6 +65,16 @@ export function ClauseDrilldownModal({
       setSuggestedRewrite(result.suggestedRewrite);
     });
   };
+
+  const getCustomRewrite = () => {
+    startCustomRewriteTransition(async () => {
+        const result = await suggestClauseRewriteAction({
+            clauseText: selectedClause.text,
+            rewriteInstruction: customRewriteInstruction,
+        });
+        setCustomRewriteResult(result.suggestedRewrite);
+    });
+  }
   
   const handleRecalculate = () => {
     startAnalysisTransition(async () => {
@@ -106,7 +125,7 @@ export function ClauseDrilldownModal({
               />
                <Button onClick={handleRecalculate} disabled={isAnalysisLoading} className="mt-2">
                 {isAnalysisLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Recalculate Risk (What-If)
+                Recalculate Risk
               </Button>
             </div>
             <div>
@@ -132,7 +151,7 @@ export function ClauseDrilldownModal({
                    {isRewriteLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Suggest Rewrite'}
                  </Button>
               </div>
-              <div className="p-4 rounded-md border bg-muted/50 min-h-[120px]">
+              <div className="p-4 rounded-md border bg-muted/50 min-h-[120px] relative">
                 {isRewriteLoading && <Skeleton className="h-24 w-full" />}
                 {suggestedRewrite ? (
                   <>
@@ -150,6 +169,55 @@ export function ClauseDrilldownModal({
                   <p className="text-sm text-muted-foreground">Click &quot;Suggest Rewrite&quot; for an improved version.</p>
                 )}
               </div>
+            </div>
+            {/* Custom Rewrite Section */}
+            <div>
+                <Button onClick={() => setIsCustomRewriteVisible(!isCustomRewriteVisible)} variant="outline" className="mb-2">
+                    What-If Rewrite
+                </Button>
+
+                {isCustomRewriteVisible && (
+                    <div className='space-y-4'>
+                        <div>
+                            <h4 className="font-semibold mb-2">Rewrite Instructions</h4>
+                            <Textarea 
+                                value={customRewriteInstruction}
+                                onChange={(e) => setCustomRewriteInstruction(e.target.value)}
+                                placeholder='e.g., "Make this clause more favorable to the Receiving Party by adding a 30-day cure period."'
+                                className='min-h-[100px]'
+                            />
+                            <Button onClick={getCustomRewrite} disabled={isCustomRewriteLoading || !customRewriteInstruction} className="mt-2">
+                                {isCustomRewriteLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Generate Custom Rewrite'}
+                            </Button>
+                        </div>
+                        
+                        {isCustomRewriteLoading && (
+                            <div className="p-4 rounded-md border bg-muted/50 min-h-[120px]">
+                                <Skeleton className="h-24 w-full" />
+                            </div>
+                        )}
+
+                        {customRewriteResult && !isCustomRewriteLoading && (
+                            <div>
+                                <h4 className="font-semibold mb-2">Custom Rewrite Result</h4>
+                                <div className="p-4 rounded-md border bg-muted/50 min-h-[120px] relative">
+                                    <p className="text-sm">{customRewriteResult}</p>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="absolute top-2 right-2"
+                                      onClick={() => {
+                                        navigator.clipboard.writeText(customRewriteResult);
+                                        toast({ title: 'Copied to clipboard!' });
+                                      }}
+                                    >
+                                      <Copy className="h-4 w-4" />
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
           </div>
         </ScrollArea>

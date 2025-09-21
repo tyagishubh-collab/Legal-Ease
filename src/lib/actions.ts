@@ -94,6 +94,7 @@ export async function answerQuestionAction(
 
 const rewriteSchema = z.object({
   clauseText: z.string(),
+  rewriteInstruction: z.string().optional(),
 });
 
 export async function suggestClauseRewriteAction(

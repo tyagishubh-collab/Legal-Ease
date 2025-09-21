@@ -13,6 +13,7 @@ import {z} from 'genkit';
 
 const SuggestClauseRewriteInputSchema = z.object({
   clauseText: z.string().describe('The text of the clause to rewrite.'),
+  rewriteInstruction: z.string().optional().describe('Specific instructions on how to rewrite the clause.'),
 });
 export type SuggestClauseRewriteInput = z.infer<
   typeof SuggestClauseRewriteInputSchema
@@ -40,6 +41,10 @@ const prompt = ai.definePrompt({
   input: {schema: SuggestClauseRewriteInputSchema},
   output: {schema: SuggestClauseRewriteOutputSchema},
   prompt: `You are an expert legal drafter. Review the following clause and provide a rewritten version that is clearer, fairer, and less risky for both parties.
+
+{{#if rewriteInstruction}}
+Follow these specific instructions for the rewrite: {{{rewriteInstruction}}}
+{{/if}}
 
 Clause: {{{clauseText}}}
 
