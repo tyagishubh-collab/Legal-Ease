@@ -51,37 +51,46 @@ export function SafetyScore({ value }: SafetyScoreProps) {
   const status = getStatus(value);
 
   return (
-    <Card className="h-full border-none shadow-none">
-      <CardContent className="flex flex-col items-center justify-center space-y-4 pt-6">
-        <div className="relative h-32 w-32">
-          <svg className="h-full w-full" viewBox="0 0 36 36">
-            <path
-              className="text-muted/50"
-              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-            />
-            <path
-              className={cn('transition-all duration-1000 ease-out', status.textColor)}
-              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeDasharray={`${progress}, 100`}
-              strokeLinecap="round"
-            />
-          </svg>
-          <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className={cn('text-4xl font-bold', status.textColor)}>
-              {Math.round(value)}
-            </span>
-          </div>
+    <Card className="h-full">
+        <CardHeader>
+            <CardTitle>Safety Overview</CardTitle>
+            <CardDescription>Your document's AI-generated safety rating.</CardDescription>
+        </CardHeader>
+      <CardContent className="flex items-center justify-between p-6">
+        <div className="flex items-center gap-4">
+            <div className="relative h-24 w-24">
+            <svg className="h-full w-full" viewBox="0 0 36 36">
+                <path
+                className="text-muted/50"
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                />
+                <path
+                className={cn('transition-all duration-1000 ease-out', status.textColor)}
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeDasharray={`${progress}, 100`}
+                strokeLinecap="round"
+                />
+            </svg>
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className={cn('text-3xl font-bold', status.textColor)}>
+                {Math.round(value)}
+                </span>
+            </div>
+            </div>
+        </div>
+        
+        <div className='flex flex-col items-end'>
+            <Badge variant={'outline'} className={cn('text-sm px-4 py-1', status.badgeClass)}>
+                {status.label}
+            </Badge>
         </div>
 
-        <Badge variant={'outline'} className={cn('text-sm', status.badgeClass)}>
-          {status.label}
-        </Badge>
       </CardContent>
     </Card>
   );
