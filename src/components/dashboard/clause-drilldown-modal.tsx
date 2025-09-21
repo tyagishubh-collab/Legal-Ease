@@ -8,6 +8,7 @@ import {
   explainClauseForRoleAction,
   suggestClauseRewriteAction,
   analyzeClauseRiskAction,
+  predictClauseOutcomeAction,
 } from '@/lib/actions';
 import { Copy, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -26,14 +27,14 @@ export function ClauseDrilldownModal({
   const [editedText, setEditedText] = useState(selectedClause.text);
   const [explanation, setExplanation] = useState<Explanation | null>(null);
   const [suggestedRewrite, setSuggestedRewrite] = useState<string | null>(null);
-  const [customRewriteInstruction, setCustomRewriteInstruction] = useState('');
-  const [customRewriteResult, setCustomRewriteResult] = useState<string | null>(null);
-  const [isCustomRewriteVisible, setIsCustomRewriteVisible] = useState(false);
+  const [hypotheticalSituation, setHypotheticalSituation] = useState('');
+  const [predictedOutcome, setPredictedOutcome] = useState<string | null>(null);
+  const [isPredictionVisible, setIsPredictionVisible] = useState(false);
   
   const [isExplanationLoading, startExplanationTransition] = useTransition();
   const [isRewriteLoading, startRewriteTransition] = useTransition();
   const [isAnalysisLoading, startAnalysisTransition] = useTransition();
-  const [isCustomRewriteLoading, startCustomRewriteTransition] = useTransition();
+  const [isPredictionLoading, startPredictionTransition] = useTransition();
 
   const { toast } = useToast();
 
@@ -42,9 +43,9 @@ export function ClauseDrilldownModal({
     setEditedText(clause.text);
     setExplanation(null);
     setSuggestedRewrite(null);
-    setCustomRewriteResult(null);
-    setCustomRewriteInstruction('');
-    setIsCustomRewriteVisible(false);
+    setPredictedOutcome(null);
+    setHypotheticalSituation('');
+    setIsPredictionVisible(false);
   };
 
   const getExplanation = () => {
@@ -66,13 +67,13 @@ export function ClauseDrilldownModal({
     });
   };
 
-  const getCustomRewrite = () => {
-    startCustomRewriteTransition(async () => {
-        const result = await suggestClauseRewriteAction({
+  const getPrediction = () => {
+    startPredictionTransition(async () => {
+        const result = await predictClauseOutcomeAction({
             clauseText: selectedClause.text,
-            rewriteInstruction: customRewriteInstruction,
+            situation: hypotheticalSituation,
         });
-        setCustomRewriteResult(result.suggestedRewrite);
+        setPredictedOutcome(result.predictedOutcome);
     });
   }
   
@@ -87,9 +88,9 @@ export function ClauseDrilldownModal({
     });
   }
 
-  const copyRewrite = () => {
-    if (suggestedRewrite) {
-      navigator.clipboard.writeText(suggestedRewrite);
+  const copyToClipboard = (text: string | null) => {
+    if (text) {
+      navigator.clipboard.writeText(text);
       toast({ title: 'Copied to clipboard!' });
     }
   };
@@ -160,7 +161,7 @@ export function ClauseDrilldownModal({
                       variant="ghost"
                       size="icon"
                       className="absolute top-2 right-2"
-                      onClick={copyRewrite}
+                      onClick={() => copyToClipboard(suggestedRewrite)}
                     >
                       <Copy className="h-4 w-4" />
                     </Button>
@@ -170,46 +171,44 @@ export function ClauseDrilldownModal({
                 )}
               </div>
             </div>
-            {/* Custom Rewrite Section */}
+            
+            {/* Predict Outcome Section */}
             <div>
-                <Button onClick={() => setIsCustomRewriteVisible(!isCustomRewriteVisible)} variant="outline" className="mb-2">
-                    What-If Rewrite
+                <Button onClick={() => setIsPredictionVisible(!isPredictionVisible)} variant="outline" className="mb-2">
+                    Predict Outcome
                 </Button>
 
-                {isCustomRewriteVisible && (
+                {isPredictionVisible && (
                     <div className='space-y-4'>
                         <div>
-                            <h4 className="font-semibold mb-2">Rewrite Instructions</h4>
+                            <h4 className="font-semibold mb-2">Hypothetical Situation</h4>
                             <Textarea 
-                                value={customRewriteInstruction}
-                                onChange={(e) => setCustomRewriteInstruction(e.target.value)}
-                                placeholder='e.g., "Make this clause more favorable to the Receiving Party by adding a 30-day cure period."'
+                                value={hypotheticalSituation}
+                                onChange={(e) => setHypotheticalSituation(e.target.value)}
+                                placeholder="e.g., 'What if the Receiving Party accidentally leaks information to a competitor?'"
                                 className='min-h-[100px]'
                             />
-                            <Button onClick={getCustomRewrite} disabled={isCustomRewriteLoading || !customRewriteInstruction} className="mt-2">
-                                {isCustomRewriteLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Generate Custom Rewrite'}
+                            <Button onClick={getPrediction} disabled={isPredictionLoading || !hypotheticalSituation} className="mt-2">
+                                {isPredictionLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Generate Prediction'}
                             </Button>
                         </div>
                         
-                        {isCustomRewriteLoading && (
+                        {isPredictionLoading && (
                             <div className="p-4 rounded-md border bg-muted/50 min-h-[120px]">
                                 <Skeleton className="h-24 w-full" />
                             </div>
                         )}
 
-                        {customRewriteResult && !isCustomRewriteLoading && (
+                        {predictedOutcome && !isPredictionLoading && (
                             <div>
-                                <h4 className="font-semibold mb-2">Custom Rewrite Result</h4>
+                                <h4 className="font-semibold mb-2">Predicted Outcome</h4>
                                 <div className="p-4 rounded-md border bg-muted/50 min-h-[120px] relative">
-                                    <p className="text-sm">{customRewriteResult}</p>
+                                    <p className="text-sm">{predictedOutcome}</p>
                                     <Button
                                       variant="ghost"
                                       size="icon"
                                       className="absolute top-2 right-2"
-                                      onClick={() => {
-                                        navigator.clipboard.writeText(customRewriteResult);
-                                        toast({ title: 'Copied to clipboard!' });
-                                      }}
+                                      onClick={() => copyToClipboard(predictedOutcome)}
                                     >
                                       <Copy className="h-4 w-4" />
                                     </Button>

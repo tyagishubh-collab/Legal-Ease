@@ -28,6 +28,7 @@ import { getTopLawyers } from '@/ai/flows/get-top-lawyers-gemini';
 import { contract } from '@/lib/data';
 import mammoth from 'mammoth';
 import { GetTopLawyersInputSchema } from './types';
+import { PredictClauseOutcomeInput, predictClauseOutcome } from '@/ai/flows/predict-clause-outcome';
 
 
 const summarizeSchema = z.object({
@@ -173,4 +174,19 @@ export async function getTopLawyersAction(input: GetTopLawyersInput): Promise<{ 
     }
     const result = await getTopLawyers(validatedInput.data);
     return { lawyers: result.lawyers };
+}
+
+const predictOutcomeSchema = z.object({
+  clauseText: z.string(),
+  situation: z.string(),
+});
+
+export async function predictClauseOutcomeAction(
+  input: PredictClauseOutcomeInput
+): Promise<{ predictedOutcome: string }> {
+  const validatedInput = predictOutcomeSchema.safeParse(input);
+  if (!validatedInput.success) {
+    throw new Error('Invalid input for predictClauseOutcomeAction');
+  }
+  return await predictClauseOutcome(validatedInput.data);
 }
