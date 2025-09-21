@@ -99,7 +99,6 @@ export function DashboardPageClient({
       </div>
 
       <div className="space-y-8 pt-4">
-        <ClauseList clauses={mediumRiskClauses as (Clause & { risk: RiskAnalysis; })[]} riskLevel="medium" title="Medium Risk Clauses" />
         <ClauseList clauses={lowRiskClauses as (Clause & { risk: RiskAnalysis; })[]} riskLevel="low" title="Low Risk Clauses" />
       </div>
 
