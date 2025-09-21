@@ -2,21 +2,18 @@
 
 import { useState, useTransition } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Loader2, FileUp, Sparkles } from 'lucide-react';
-import type { AnalyzeDocumentRiskOutput, AnalyzeDocumentSafetyOutput } from '@/lib/types';
+import { FileUp, Sparkles } from 'lucide-react';
+import type { DocumentAnalysisResult } from '@/lib/types';
 import { AnalysisResult } from '@/components/contract/analysis-result';
 import { analyzeDocumentAction } from '@/lib/actions';
 import { Dropzone } from '@/components/contract/dropzone';
 import { SafetySummary } from '@/components/contract/safety-summary';
+import { CustomLoader } from '@/components/ui/custom-loader';
 
-type AnalysisResultBundle = {
-  riskAnalysis: AnalyzeDocumentRiskOutput;
-  safetyAnalysis: AnalyzeDocumentSafetyOutput;
-};
 
 export default function ContractPage() {
   const [isPending, startTransition] = useTransition();
-  const [analysisResult, setAnalysisResult] = useState<AnalysisResultBundle | null>(null);
+  const [analysisResult, setAnalysisResult] = useState<DocumentAnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
@@ -31,8 +28,7 @@ export default function ContractPage() {
         setAnalysisResult(result);
         
         // Save the result to localStorage for the dashboard to use
-        localStorage.setItem('latest-analysis-result', JSON.stringify(result.riskAnalysis));
-        localStorage.setItem('latest-safety-result', JSON.stringify(result.safetyAnalysis));
+        localStorage.setItem('latest-analysis-result', JSON.stringify(result));
         localStorage.setItem('latest-analysis-filename', selectedFile.name);
 
       } catch (e) {
@@ -53,7 +49,7 @@ export default function ContractPage() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="p-6">
-                    <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
+                    <CustomLoader />
                     <p className="mt-4 text-sm text-muted-foreground">This can take up to a minute.</p>
                 </CardContent>
             </Card>
@@ -73,7 +69,7 @@ export default function ContractPage() {
           <div className="flex-1 w-full p-4 sm:p-6 lg:p-8">
             <div className="w-full max-w-4xl mx-auto space-y-8">
               <Card>
-                <SafetySummary result={analysisResult.safetyAnalysis} />
+                <SafetySummary result={analysisResult.safetyAnalysis} precautions={analysisResult.precautions} />
               </Card>
               <Card>
                 <AnalysisResult result={analysisResult.riskAnalysis} />

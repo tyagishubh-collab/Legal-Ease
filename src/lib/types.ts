@@ -102,6 +102,20 @@ export const GetTopLawyersOutputSchema = z.object({
   lawyers: z.array(TopLawyerSchema).describe('A list of top-rated lawyers found nearby.'),
 });
 
+export const GetDocumentPrecautionsInputSchema = z.object({
+    documentDataUri: z
+      .string()
+      .optional()
+      .describe(
+        "The contract document to analyze, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
+      ),
+    documentText: z.string().optional().describe('The raw text of the document to analyze.')
+});
+
+export const GetDocumentPrecautionsOutputSchema = z.object({
+    precautions: z.array(z.string()).length(4).describe("An array of exactly four key precautions for the user."),
+});
+
 
 // Export inferred types from schemas
 export type AnalyzeDocumentRiskInput = z.infer<
@@ -118,3 +132,12 @@ export type AnalyzeDocumentSafetyOutput = z.infer<
 >;
 export type GetTopLawyersInput = z.infer<typeof GetTopLawyersInputSchema>;
 export type GetTopLawyersOutput = z.infer<typeof GetTopLawyersOutputSchema>;
+export type GetDocumentPrecautionsInput = z.infer<typeof GetDocumentPrecautionsInputSchema>;
+export type GetDocumentPrecautionsOutput = z.infer<typeof GetDocumentPrecautionsOutputSchema>;
+
+
+export type DocumentAnalysisResult = {
+    riskAnalysis: AnalyzeDocumentRiskOutput;
+    safetyAnalysis: AnalyzeDocumentSafetyOutput;
+    precautions?: GetDocumentPrecautionsOutput;
+};

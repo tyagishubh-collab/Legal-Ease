@@ -8,3 +8,4 @@ import '@/ai/flows/analyze-document-risk.ts';
 import '@/ai/flows/analyze-document-safety.ts';
 import '@/ai/flows/get-top-lawyers-gemini.ts';
 import '@/ai/flows/predict-clause-outcome.ts';
+import '@/ai/flows/get-document-precautions.ts';

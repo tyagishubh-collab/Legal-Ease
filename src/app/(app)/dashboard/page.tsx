@@ -3,7 +3,7 @@ import { contract as initialContract } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DashboardPageClient } from '@/components/dashboard/dashboard-page-client';
 import { DashboardPageHeader } from '@/components/dashboard/dashboard-page-header';
-import type { AnalyzeDocumentRiskOutput, AnalyzeDocumentSafetyOutput, Clause, RiskAnalysis } from '@/lib/types';
+import type { AnalyzeDocumentRiskOutput, AnalyzeDocumentSafetyOutput, Clause, GetDocumentPrecautionsOutput, RiskAnalysis } from '@/lib/types';
 
 
 export default async function DashboardPage() {
@@ -28,6 +28,15 @@ export default async function DashboardPage() {
     safetyScore: safetyScore,
     keyRisk: "The indemnification clause is uncapped, posing significant financial risk."
   }
+  
+  const initialPrecautions: GetDocumentPrecautionsOutput = {
+    precautions: [
+        "Thoroughly review the uncapped indemnification clause (Clause 6) as it poses significant financial risk.",
+        "Clarify the termination conditions, as the current language is perpetual for confidentiality.",
+        "Ensure you have a process to label or document all communications intended to be confidential.",
+        "Confirm that the Governing Law and jurisdiction in California are acceptable for your business."
+    ]
+  }
 
   return (
     <div className="flex-1 w-full min-h-screen p-4 sm:p-6 lg:p-8 bg-background overflow-x-hidden">
@@ -40,6 +49,7 @@ export default async function DashboardPage() {
           <DashboardPageClient 
             initialRiskAnalysis={initialRiskAnalysis}
             initialSafetyAnalysis={initialSafetyAnalysis}
+            initialPrecautions={initialPrecautions}
           />
         </Suspense>
       </div>

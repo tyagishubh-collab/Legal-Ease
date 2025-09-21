@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import type { AnalyzeDocumentRiskOutput, AnalyzeDocumentSafetyOutput, Clause, RiskAnalysis } from '@/lib/types';
+import type { AnalyzeDocumentRiskOutput, AnalyzeDocumentSafetyOutput, Clause, GetDocumentPrecautionsOutput, RiskAnalysis } from '@/lib/types';
 import { SafetyScore } from '@/components/dashboard/safety-score';
 import { RiskDistributionChart } from '@/components/dashboard/risk-distribution-chart';
 import { StatCards } from '@/components/dashboard/stat-cards';
@@ -11,14 +11,17 @@ import { ClauseList } from './clause-list';
 type DashboardPageClientProps = {
   initialRiskAnalysis: AnalyzeDocumentRiskOutput;
   initialSafetyAnalysis: AnalyzeDocumentSafetyOutput;
+  initialPrecautions: GetDocumentPrecautionsOutput;
 };
 
 export function DashboardPageClient({
   initialRiskAnalysis,
   initialSafetyAnalysis,
+  initialPrecautions,
 }: DashboardPageClientProps) {
   const [riskAnalysis, setRiskAnalysis] = useState(initialRiskAnalysis);
   const [safetyAnalysis, setSafetyAnalysis] = useState(initialSafetyAnalysis);
+  const [precautions, setPrecautions] = useState<GetDocumentPrecautionsOutput | undefined>(initialPrecautions);
 
   const [drilldownState, setDrilldownState] = useState<{
     isOpen: boolean;
@@ -27,14 +30,13 @@ export function DashboardPageClient({
 
   useEffect(() => {
     // On mount, check if there are newer results in localStorage
-    const storedRiskResult = localStorage.getItem('latest-analysis-result');
-    const storedSafetyResult = localStorage.getItem('latest-safety-result');
+    const storedResult = localStorage.getItem('latest-analysis-result');
 
-    if (storedRiskResult) {
-      setRiskAnalysis(JSON.parse(storedRiskResult));
-    }
-    if (storedSafetyResult) {
-        setSafetyAnalysis(JSON.parse(storedSafetyResult));
+    if (storedResult) {
+      const result = JSON.parse(storedResult);
+      setRiskAnalysis(result.riskAnalysis);
+      setSafetyAnalysis(result.safetyAnalysis);
+      setPrecautions(result.precautions);
     }
   }, []);
 
@@ -87,7 +89,7 @@ export function DashboardPageClient({
   return (
     <div className='space-y-8'>
       <div>
-        <SafetyScore value={safetyAnalysis.safetyScore} />
+        <SafetyScore value={safetyAnalysis.safetyScore} precautions={precautions?.precautions || []} />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-8">
         <RiskDistributionChart data={riskData} />

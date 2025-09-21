@@ -1,15 +1,16 @@
 'use client';
 
-import type { AnalyzeDocumentSafetyOutput } from "@/lib/types";
+import type { AnalyzeDocumentSafetyOutput, GetDocumentPrecautionsOutput } from "@/lib/types";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { SafetyScore } from "../dashboard/safety-score";
 import { AlertTriangle } from "lucide-react";
 
 interface SafetySummaryProps {
     result: AnalyzeDocumentSafetyOutput;
+    precautions?: GetDocumentPrecautionsOutput;
 }
 
-export function SafetySummary({ result }: SafetySummaryProps) {
+export function SafetySummary({ result, precautions }: SafetySummaryProps) {
     const safetyScoreValue = result?.safetyScore ?? 0;
     const keyRisk = result?.keyRisk ?? "No analysis has been performed yet.";
 
@@ -21,7 +22,7 @@ export function SafetySummary({ result }: SafetySummaryProps) {
             </CardHeader>
             <CardContent className="grid md:grid-cols-2 gap-6 items-center">
                 <div className="flex justify-center">
-                    <SafetyScore value={safetyScoreValue} />
+                    <SafetyScore value={safetyScoreValue} precautions={precautions?.precautions || []} />
                 </div>
                 <div className="flex flex-col justify-center space-y-4">
                      <div className="flex items-start gap-4 p-4 border rounded-lg bg-card">

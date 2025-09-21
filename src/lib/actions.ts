@@ -1,7 +1,7 @@
 'use server';
 
 import { z } from 'zod';
-import type { Summary, Explanation, RiskAnalysis, SuggestedRewrite, AnalyzeDocumentRiskOutput, AnalyzeDocumentSafetyOutput, TopLawyer, GetTopLawyersInput } from './types';
+import type { Summary, Explanation, RiskAnalysis, SuggestedRewrite, AnalyzeDocumentRiskOutput, AnalyzeDocumentSafetyOutput, TopLawyer, GetTopLawyersInput, GetDocumentPrecautionsOutput, DocumentAnalysisResult } from './types';
 import {
   SummarizeClauseInput,
   summarizeClause,
@@ -29,6 +29,7 @@ import { contract } from '@/lib/data';
 import mammoth from 'mammoth';
 import { GetTopLawyersInputSchema } from './types';
 import { PredictClauseOutcomeInput, predictClauseOutcome } from '@/ai/flows/predict-clause-outcome';
+import { getDocumentPrecautions } from '@/ai/flows/get-document-precautions';
 
 
 const summarizeSchema = z.object({
@@ -125,11 +126,6 @@ const analyzeDocumentSchema = z.object({
   file: z.instanceof(File),
 });
 
-type DocumentAnalysisResult = {
-    riskAnalysis: AnalyzeDocumentRiskOutput;
-    safetyAnalysis: AnalyzeDocumentSafetyOutput;
-};
-
 const DOCX_MIME_TYPE = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
 
 export async function analyzeDocumentAction(
@@ -144,27 +140,25 @@ export async function analyzeDocumentAction(
   
   const buffer = await file.arrayBuffer();
   
-  let riskInput = {};
-  let safetyInput = {};
+  let analysisInput = {};
 
   if (file.type === DOCX_MIME_TYPE) {
     const { value: documentText } = await mammoth.extractRawText({ buffer });
-    riskInput = { documentText };
-    safetyInput = { documentText };
+    analysisInput = { documentText };
   } else {
     const base64 = Buffer.from(buffer).toString('base64');
     const documentDataUri = `data:${file.type};base64,${base64}`;
-    riskInput = { documentDataUri };
-    safetyInput = { documentDataUri };
+    analysisInput = { documentDataUri };
   }
 
-  // Run both analyses in parallel
-  const [riskAnalysis, safetyAnalysis] = await Promise.all([
-    analyzeDocumentRisk(riskInput),
-    analyzeDocumentSafety(safetyInput)
+  // Run all analyses in parallel
+  const [riskAnalysis, safetyAnalysis, precautions] = await Promise.all([
+    analyzeDocumentRisk(analysisInput),
+    analyzeDocumentSafety(analysisInput),
+    getDocumentPrecautions(analysisInput),
   ]);
   
-  return { riskAnalysis, safetyAnalysis };
+  return { riskAnalysis, safetyAnalysis, precautions };
 }
 
 export async function getTopLawyersAction(input: GetTopLawyersInput): Promise<{ lawyers: TopLawyer[] }> {
