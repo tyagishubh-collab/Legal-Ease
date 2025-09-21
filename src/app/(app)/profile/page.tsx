@@ -47,7 +47,7 @@ export default function ProfilePage() {
       // Save to localStorage to sync with AppShell
       localStorage.setItem('user-avatar-url', newAvatarUrl);
       // Dispatch a storage event to notify other tabs/windows
-      window.dispatchEvent(new StorageEvent('storage', { key: 'user-avatar-url' }));
+      window.dispatchEvent(new StorageEvent('storage', { key: 'user-avatar-url', newValue: newAvatarUrl }));
 
       toast({
         title: "Profile Picture Updated",
