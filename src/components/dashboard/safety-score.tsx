@@ -6,10 +6,10 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useEffect, useState } from 'react';
 import { CheckCircle } from 'lucide-react';
+import { ScrollArea } from '../ui/scroll-area';
 
 type SafetyScoreProps = {
   value: number;
@@ -49,6 +49,9 @@ export function SafetyScore({ value, precautions }: SafetyScoreProps) {
   };
   
   const status = getStatus(value);
+  
+  const totalChars = precautions.reduce((acc, p) => acc + p.length, 0);
+  const fontSizeClass = totalChars > 200 ? 'text-xs' : 'text-sm';
 
   return (
     <Card className="h-full">
@@ -56,7 +59,7 @@ export function SafetyScore({ value, precautions }: SafetyScoreProps) {
             <CardTitle>Safety Overview</CardTitle>
             <CardDescription>Your document's AI-generated safety rating and key precautions.</CardDescription>
         </CardHeader>
-      <CardContent className="grid md:grid-cols-2 gap-6 items-center p-6">
+      <CardContent className="grid md:grid-cols-2 gap-6 items-start p-6">
         <div className="relative h-24 w-24">
           <svg className="h-full w-full" viewBox="0 0 36 36">
               <path
@@ -85,14 +88,16 @@ export function SafetyScore({ value, precautions }: SafetyScoreProps) {
 
         <div className="space-y-3">
             <h4 className="font-semibold text-foreground">Key Precautions:</h4>
-            <ul className="space-y-2">
-                {precautions.map((precaution, index) => (
-                    <li key={index} className="flex items-start gap-2">
-                        <CheckCircle className={cn("h-4 w-4 mt-1 flex-shrink-0", precautionColors[index % precautionColors.length])} />
-                        <span className="text-sm text-muted-foreground">{precaution}</span>
-                    </li>
-                ))}
-            </ul>
+             <ScrollArea className="h-[100px] pr-4">
+                <ul className="space-y-2">
+                    {(precautions || []).map((precaution, index) => (
+                        <li key={index} className="flex items-start gap-2">
+                            <CheckCircle className={cn("h-4 w-4 mt-1 flex-shrink-0", precautionColors[index % precautionColors.length])} />
+                            <span className={cn('text-muted-foreground', fontSizeClass)}>{precaution}</span>
+                        </li>
+                    ))}
+                </ul>
+            </ScrollArea>
         </div>
         
       </CardContent>
