@@ -1,12 +1,17 @@
 'use client';
 import { useState, useEffect } from 'react';
-import type { AnalyzeDocumentRiskOutput, AnalyzeDocumentSafetyOutput, Clause, GetDocumentPrecautionsOutput, RiskAnalysis } from '@/lib/types';
+import type {
+  AnalyzeDocumentRiskOutput,
+  AnalyzeDocumentSafetyOutput,
+  GetDocumentPrecautionsOutput,
+} from '@/lib/types';
 import { SafetyScore } from '@/components/dashboard/safety-score';
 import { RiskDistributionChart } from '@/components/dashboard/risk-distribution-chart';
 import { StatCards } from '@/components/dashboard/stat-cards';
-import { ClauseDrilldown } from '@/components/dashboard/clause-drilldown';
+import { HighRiskClauses } from '@/components/dashboard/high-risk-clauses';
+import { MediumRiskClauses } from '@/components/dashboard/medium-risk-clauses';
+import { LowRiskClauses } from '@/components/dashboard/low-risk-clauses';
 import { TopLawyers } from './top-lawyers';
-import { ClauseList } from './clause-list';
 
 type DashboardPageClientProps = {
   initialRiskAnalysis: AnalyzeDocumentRiskOutput;
@@ -21,34 +26,49 @@ export function DashboardPageClient({
 }: DashboardPageClientProps) {
   const [riskAnalysis, setRiskAnalysis] = useState(initialRiskAnalysis);
   const [safetyAnalysis, setSafetyAnalysis] = useState(initialSafetyAnalysis);
-  const [precautions, setPrecautions] = useState<GetDocumentPrecautionsOutput | undefined>(initialPrecautions);
-
-  const [drilldownState, setDrilldownState] = useState<{
-    isOpen: boolean;
-    riskLevel: 'high' | 'medium' | 'low' | null;
-  }>({ isOpen: false, riskLevel: null });
+  const [precautions, setPrecautions] = useState<
+    GetDocumentPrecautionsOutput | undefined
+  >(initialPrecautions);
 
   useEffect(() => {
     // On mount, check if there are newer results in localStorage
     const storedResult = localStorage.getItem('latest-analysis-result');
-
     if (storedResult) {
-      const result = JSON.parse(storedResult);
-      setRiskAnalysis(result.riskAnalysis);
-      setSafetyAnalysis(result.safetyAnalysis);
-      setPrecautions(result.precautions);
+      try {
+        const result = JSON.parse(storedResult);
+        console.log('Dashboard loaded data:', result);
+
+        // Safely destructure with default values
+        const {
+          riskAnalysis: loadedRiskAnalysis = initialRiskAnalysis,
+          safetyAnalysis: loadedSafetyAnalysis = initialSafetyAnalysis,
+          precautions: loadedPrecautions = initialPrecautions,
+        } = result ?? {};
+
+        setRiskAnalysis(loadedRiskAnalysis);
+        setSafetyAnalysis(loadedSafetyAnalysis);
+        setPrecautions(loadedPrecautions);
+      } catch (error) {
+        console.error('Failed to parse dashboard data from localStorage', error);
+        // Fallback to initial props if parsing fails
+        setRiskAnalysis(initialRiskAnalysis);
+        setSafetyAnalysis(initialSafetyAnalysis);
+        setPrecautions(initialPrecautions);
+      }
     }
-  }, []);
+  }, [initialPrecautions, initialRiskAnalysis, initialSafetyAnalysis]);
 
   const { highRiskClauses, mediumRiskClauses, lowRiskClauses } = riskAnalysis;
 
   const totalClauses =
-    highRiskClauses.length + mediumRiskClauses.length + lowRiskClauses.length;
+    (highRiskClauses?.length ?? 0) +
+    (mediumRiskClauses?.length ?? 0) +
+    (lowRiskClauses?.length ?? 0);
 
   const riskCounts = {
-    high: highRiskClauses.length,
-    medium: mediumRiskClauses.length,
-    low: lowRiskClauses.length,
+    high: highRiskClauses?.length ?? 0,
+    medium: mediumRiskClauses?.length ?? 0,
+    low: lowRiskClauses?.length ?? 0,
   };
 
   const riskData = [
@@ -61,57 +81,31 @@ export function DashboardPageClient({
     { name: 'High Risk', value: riskCounts.high, fill: 'hsl(var(--chart-3))' },
   ];
 
-  const handleStatCardClick = (riskLevel: 'high' | 'medium' | 'low') => {
-    setDrilldownState({ isOpen: true, riskLevel });
-  };
-  
-  // This function is no longer needed as we are not updating clauses on the dashboard
-  // Leaving it here in case future functionality requires it.
-  const handleClauseUpdate = (
-    clauseId: string,
-    newText: string,
-    newRisk: RiskAnalysis
-  ) => {
-    // This would require a more complex state structure if we were to allow
-    // editing and re-analyzing from the dashboard. For now, analysis is one-way.
-  };
-
-  const getDrilldownClauses = () => {
-    if (!drilldownState.riskLevel) return [];
-    switch (drilldownState.riskLevel) {
-        case 'high': return highRiskClauses;
-        case 'medium': return mediumRiskClauses;
-        case 'low': return lowRiskClauses;
-        default: return [];
-    }
-  }
-
   return (
-    <div className='space-y-8'>
+    <div className="space-y-8">
       <div>
-        <SafetyScore value={safetyAnalysis.safetyScore} precautions={precautions?.precautions || []} />
+        <SafetyScore
+          value={safetyAnalysis.safetyScore}
+          precautions={precautions?.precautions || []}
+        />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-8">
         <RiskDistributionChart data={riskData} />
         <StatCards
           riskCounts={riskCounts}
           totalClauses={totalClauses}
-          onCardClick={handleStatCardClick}
         />
+      </div>
+      
+      <div className="space-y-4 pt-4">
+        <HighRiskClauses clauses={highRiskClauses} />
+        <MediumRiskClauses clauses={mediumRiskClauses} />
+        <LowRiskClauses clauses={lowRiskClauses} />
       </div>
 
       <div className="pt-4">
         <TopLawyers />
       </div>
-      {drilldownState.isOpen && drilldownState.riskLevel && (
-        <ClauseDrilldown
-          isOpen={drilldownState.isOpen}
-          onClose={() => setDrilldownState({ isOpen: false, riskLevel: null })}
-          riskLevel={drilldownState.riskLevel}
-          clauses={getDrilldownClauses() as (Clause & { risk: RiskAnalysis; })[]}
-          onClauseUpdate={handleClauseUpdate}
-        />
-      )}
     </div>
   );
 }
