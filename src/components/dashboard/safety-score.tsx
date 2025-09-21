@@ -60,7 +60,7 @@ export function SafetyScore({ value, precautions }: SafetyScoreProps) {
             <CardDescription>Your document's AI-generated safety rating and key precautions.</CardDescription>
         </CardHeader>
       <CardContent className="grid md:grid-cols-2 gap-6 items-start p-6">
-        <div className="relative h-24 w-24">
+        <div className="relative h-32 w-32">
           <svg className="h-full w-full" viewBox="0 0 36 36">
               <path
               className="text-muted/50"
@@ -80,7 +80,7 @@ export function SafetyScore({ value, precautions }: SafetyScoreProps) {
               />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className={cn('text-3xl font-bold', status.textColor)}>
+              <span className={cn('text-4xl font-bold', status.textColor)}>
               {Math.round(value)}
               </span>
           </div>
